@@ -46,6 +46,7 @@ pdfslider:any;
 fulluserdata:any;
 smr: any;
 formattedDateNow :any;
+dataExists: boolean = false;
   constructor(private http: HttpClient, private par: ActivatedRoute) { 
     Chart.register(...registerables);
     Chart.register(ChartDataLabels);
@@ -58,7 +59,7 @@ formattedDateNow :any;
         (data: any) => {
           this.userProfile = data;
           this.userDataUrl = `https://nucleus.actofit.com:3000/smartscale/v1/actofit/get_user_data/${this.userProfile.data.parent_id}`;
-  
+          this.dataExists = true;
           this.http.get<any>(this.userDataUrl, { headers: this.headers }).subscribe(
             (data2: any) => {
               data2.data.sort((a:any,b:any)=> a.createdAt - b.createdAt)
@@ -70,11 +71,19 @@ formattedDateNow :any;
               reject(error)
             }
           );
+
         },
         error => {
           reject(error);
+          console.log("yuay", this.dataExists)
+          if (this.dataExists == false){
+            const preloader = <HTMLElement>document.querySelector(".preloader")
+            preloader.style.zIndex = "-1"
+
+           }
         }
       );
+      
     });
   }
   @ViewChild('htmlToPdf') htmlToPdf!: ElementRef<HTMLDivElement>;
@@ -110,13 +119,12 @@ formattedDateNow :any;
  
 
  async ngOnInit(): Promise<void> {
-  
     // this.weightslider= 70-
     this.divheight = document.getElementById("segmental-card")?.clientHeight
     await this.par.queryParams.subscribe(async params => {
-      // this.email = params['email']
-      this.email = "test@yopmail.com"
-      console.log(this.email);
+      this.email = params['email']
+      // this.email = "test@yopmail.com"
+      // console.log(this.email);
        this.url = `https://nucleus.actofit.com:3000/smartscale/v1/actofit/get_profile?email=${this.email}`
        await this.getUserProfile();
       });
@@ -127,7 +135,8 @@ formattedDateNow :any;
     this.formattedDateNow = now.toLocaleString('en-US', options2);
 
     this.userdata = await this.getUserProfile()
-    console.log(this.fulluserdata)
+    
+    console.log(this.userdata)
     this.age = this.getAge(this.userProfile.data.date_of_birth)
     // this.userdata = {
     //   "bmr": 21

@@ -1,3 +1,6 @@
+<div class="overlay-error" *ngIf="!dataExists">
+  <p><img src="assets/images/warning.png" style="width: 50px;"><br>Cannot build report, No Data Found<br>Please take a Smartscale Reading.</p>
+</div>
 <div id="elementToCapture" #elementToCapture>
     <!-- <div id="loader">
         <div class="spinner"></div>
