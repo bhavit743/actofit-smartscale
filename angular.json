@@ -29,7 +29,7 @@
               "src/styles.css",
               "src/assets/styles/style.scss"
             ],
-            "scripts": ["./node_modules/html2pdf.js/dist/html2pdf.bundle.min.js"],
+            "scripts": [],
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,

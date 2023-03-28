@@ -1,4 +1,7 @@
-<div id="maindiv" #maindiv>
+<div id="elementToCapture" #elementToCapture>
+    <!-- <div id="loader">
+        <div class="spinner"></div>
+      </div> -->
 <div class="header">
     <img src="assets/images/actofit_logo.svg" style="place-self: center; width: 100%;">
     <span></span>
@@ -6,33 +9,39 @@
     <p class="heading" style="place-self: center;">Scan QR Code to view your reading in your mobile app</p>
 </div>
 <!---Personal Details-->
-<mat-card class="text-center little-profile">
+<mat-card class="text-center little-profile" style="margin: 0px;">
     <!-- <img mat-card-image src="assets/images/background/profile-bg.jpg" alt="Photo of a Shiba Inu"> -->
-    <mat-card-content fxLayout="row" fxLayoutWrap="wrap">
+    <mat-card-content fxLayout="row" fxLayoutWrap="wrap" style="padding: 10px 25px!important;">
         <!-- <div class="pro-img2" fxFlex.gt-xs="15%">
             <img src="assets/images/users/4.jpg" width="100" alt="user" class="img-circle">
         </div> -->
-        <h3 class="m-b-0 m-t-15" fxFlex.gt-xs="25%">Angela Dominic</h3>
+        <div fxFlex.gt-xs="25%" fxFlex="100" class="profile-block">
+            <!-- <img src="assets/images/age.png" class="profile-icon"> -->
+            <p class="profile-head">Name:</p>
+            <p class="profile-text"> {{userProfile.data.name}}</p>
+        </div>
         <div fxLayout="row" fxLayoutWrap="wrap" class="m-t-3" fxFlex.gt-xs="75%">
             <div fxFlex.gt-sm="25%" fxFlex.gt-xs="33.33%" fxFlex="100" class="profile-block">
-                <img src="assets/images/age.png" class="profile-icon">
-                <h3 class="font-light profile-text">26 yrs</h3>
+                <!-- <img src="assets/images/age.png" class="profile-icon"> -->
+                <p class="profile-head">Age:</p>
+                <p class="profile-text"> {{age}} yrs</p>
             </div>
             <div fxFlex.gt-sm="25%" fxFlex="100" class="profile-block">
-                <img src="assets/images/height.png" class="profile-icon">
-                <h3 class="font-light profile-text">177 cm</h3>
+                <!-- <img src="assets/images/height.png" class="profile-icon"> -->
+                <p class="profile-head">Height:</p>
+                <p class="profile-text"> {{userProfile.data.height}} cm</p>
             </div>
             <div fxFlex.gt-sm="25%" fxFlex.gt-xs="33.33%" fxFlex="100" class="profile-block">
-                <img src="assets/images/male.png" class="profile-icon">
-                <h3 class="font-light profile-text">Male</h3>
-            </div>
+                <p class="profile-head">Gender:</p>
+                <p class="profile-text" style="text-transform: capitalize;">{{userProfile.data.gender}}</p>            </div>
             <div fxFlex.gt-sm="25%" fxFlex.gt-xs="33.33%" fxFlex="100" class="profile-block">
-                <img src="assets/images/calendar.png" class="profile-icon">
-                <h3 class="font-light profile-text">2023-2-21</h3>
+                <p class="profile-head">Date:</p>
+                <p class="profile-text">{{formattedDateNow}}</p>
             </div>
         </div>
     </mat-card-content>
 </mat-card>
+<button (click)="generatePDF()" class="print-button heading ">Print</button>
 <div class="upper-section" fxLayout="row" fxLayoutWrap="wrap">
 <div class="analysis-section" fxFlex.gt-sm="50%">
 <!---body-composition-->
@@ -99,7 +108,7 @@
 </mat-card>
 
 <!--Muscle Fat-->
-<h3 class="heading" style="margin-top: 45px;">Muscle Fat Analysis</h3>
+<h3 class="heading" style="margin-top: 15px;">Muscle Fat Analysis</h3>
 <mat-card class="card-main mfa">
     <div class="table-row">
         <div fxLayout="row" fxLayoutWrap="wrap" class="table-row-2">
@@ -107,23 +116,27 @@
             Weight ({{userdata.weight}}Kg)
         </div>
         <div class="col-2 m-t-5" fxFlex.gt-sm="75%" fxLayout="row" fxLayoutWrap="wrap">
-            <div class="slider-section" fxFlex.gt-sm="20%" width="20%">
+            <div class="slider-section" fxFlex.gt-sm="20%" width="20%">   
                 <div class="slider slider-1"></div>
                 <p class="slider-text-in">Seriously Low</p>    
             </div>
             <div class="slider-section" fxFlex.gt-sm="20%" width="20%">
+                <p class="slider-text-up">{{this.sw * 0.80 | number : '.1-1'}}</p>
                 <div class="slider slider-2"></div>
                 <p class="slider-text-in">Low</p>    
             </div>
             <div class="slider-section" fxFlex.gt-sm="20%" width="20%">
+                <p class="slider-text-up">{{this.sw * 0.89 | number : '.1-1'}}</p>
                 <div class="slider slider-3"></div>
                 <p class="slider-text-in">Standard</p>    
             </div>
             <div class="slider-section" fxFlex.gt-sm="20%" width="20%">
+                <p class="slider-text-up">{{this.sw * 1.09 | number : '.1-1'}}</p>
                 <div class="slider slider-4"></div>
                 <p class="slider-text-in">High</p>    
             </div>
             <div class="slider-section" fxFlex.gt-sm="20%" width="20%">
+                <p class="slider-text-up">{{this.sw * 1.20 | number : '.1-1'}}</p>
                 <div class="slider slider-5"></div>
                 <p class="slider-text-in">Exceed</p>    
             </div>
@@ -149,17 +162,19 @@
                 <p class="slider-text-in">Low</p>    
             </div>
             <div class="slider slider-section" fxFlex.gt-sm="33.33%" width="33.33%">
+                <p class="slider-text-up">{{this.smm | number : '.1-1'}}</p>
                 <div class="slider-3"></div>
                 <p class="slider-text-in">Standard</p>    
             </div>
             <div class="slider slider-section" fxFlex.gt-sm="33.33%" width="33.33%">
+                <p class="slider-text-up">{{this.smm + 10 | number : '.1-1'}}</p>
                 <div class="slider-4"></div>
                 <p class="slider-text-in">High</p>    
             </div>
             <!-- <p class="slider-text" id="first-text" style="left: 32%">49.0</p>
             <p class="slider-text" id="second-text" style="left: 65%">59.0</p> -->
             <!-- <img src="assets/images/slider-dot.png" style="width: 21px; top: -5.5px;" [style.left.%]="weightslider" class="slider-dot"> -->
-            <img src="assets/images/marker.png" style="width: 15px; top: 15px;" [style.left.%]="weightslider" class="slider-dot">
+            <img src="assets/images/marker.png" style="width: 15px; top: 15px;" [style.left.%]="smmslider" class="slider-dot">
         </div>
         </div>
         <div fxLayout="row" fxLayoutWrap="wrap" class="table-row-2">
@@ -173,14 +188,17 @@
                     <p class="slider-text-in">Low</p>    
                 </div>
                 <div class="slider-section" fxFlex.gt-sm="25%" width="25%">
+                    <p class="slider-text-up">{{bfp*weight/100 | number : '.1-1'}}</p>
                     <div class="slider slider-3"></div>
                     <p class="slider-text-in">Standard</p>    
                 </div>
                 <div class="slider-section" fxFlex.gt-sm="25%" width="25%">
+                    <p class="slider-text-up">{{(bfp*weight/100) + 10 | number : '.1-1'}}</p>
                     <div class="slider slider-4"></div>
                     <p class="slider-text-in">High</p>    
                 </div>
                 <div class="slider-section" fxFlex.gt-sm="25%" width="25%">
+                    <p class="slider-text-up">{{(bfp*weight/100) + 15 | number : '.1-1'}}</p>
                     <div class="slider slider-5"></div>
                     <p class="slider-text-in">Exceed</p>    
                 </div>
@@ -188,7 +206,7 @@
                 <p class="slider-text" id="third-text" style="left: 48.5%">12.8</p>
                 <p class="slider-text" id="fourth-text" style="left: 73.5%">15.1</p>    
                 <img src="assets/images/slider-dot.png" style="width: 21px; top: -5.5px;" [style.left.%]="weightslider" class="slider-dot"> -->
-                <img src="assets/images/marker.png" style="width: 15px; top: 15px;" [style.left.%]="weightslider" class="slider-dot">
+                <img src="assets/images/marker.png" style="width: 15px; top: 15px;" [style.left.%]="bfmslider" class="slider-dot">
 
             </div>
             </div>
@@ -196,7 +214,7 @@
 </mat-card>
 
 <!--Obesity Analysis-->
-<h3 class="heading" style="margin-top: 46px;">Obesity Analysis</h3>
+<h3 class="heading" style="margin-top: 15px;">Obesity Analysis</h3>
 <mat-card class="card-main mfa">
     <div class="table-row">
         <div fxLayout="row" fxLayoutWrap="wrap" class="table-row-2">
@@ -210,17 +228,19 @@
                 <p class="slider-text-in">Low</p>    
             </div>
             <div class="slider-section" fxFlex.gt-sm="33.33%" width="33.33%">
+                <p class="slider-text-up">18.5</p>
                 <div class="slider slider-3"></div>
                 <p class="slider-text-in">Standard</p>    
             </div>
             <div class="slider-section" fxFlex.gt-sm="33.33%" width="33.33%">
+                <p class="slider-text-up">25.0</p>
                 <div class="slider slider-4" ></div>
                 <p class="slider-text-in">High</p>    
             </div>
             <!-- <p class="slider-text" id="first-text" style="left: 32%">18.5</p>
             <p class="slider-text" id="second-text" style="left: 65%">25.0</p>
             <img src="assets/images/slider-dot.png" style="width: 21px; top: -5.5px;" [style.left.%]="weightslider" class="slider-dot"> -->
-            <img src="assets/images/marker.png" style="width: 15px; top: 15px;" [style.left.%]="weightslider" class="slider-dot">
+            <img src="assets/images/marker.png" style="width: 15px; top: 15px;" [style.left.%]="bmislider" class="slider-dot">
 
         </div>
         </div>
@@ -235,14 +255,17 @@
                     <p class="slider-text-in">Low</p>    
                 </div>
                 <div class="slider-section" fxFlex.gt-sm="25%" width="25%">
+                    <p class="slider-text-up">{{bfp | number : '.1-1'}}</p>
                     <div class="slider slider-3"></div>
                     <p class="slider-text-in">Standard</p>    
                 </div>
                 <div class="slider-section" fxFlex.gt-sm="25%" width="25%">
+                    <p class="slider-text-up">{{bfp + 10 | number : '.1-1'}}</p>
                     <div class="slider slider-4"></div>
                     <p class="slider-text-in">High</p>    
                 </div>
                 <div class="slider-section" fxFlex.gt-sm="25%" width="25%">
+                    <p class="slider-text-up">{{bfp + 15 | number : '.1-1'}}</p>
                     <div class="slider slider-5"></div>
                     <p class="slider-text-in">Exceed</p>    
                 </div>
@@ -250,7 +273,7 @@
                 <p class="slider-text" id="third-text" style="left: 48.5%">22.0</p>
                 <p class="slider-text" id="fourth-text" style="left: 73.5%">26.0</p>    
                 <img src="assets/images/slider-dot.png" style="width: 21px; top: -5.5px;" [style.left.%]="weightslider" class="slider-dot"> -->
-                <img src="assets/images/marker.png" style="width: 15px; top: 15px;" [style.left.%]="weightslider" class="slider-dot">
+                <img src="assets/images/marker.png" style="width: 15px; top: 15px;" [style.left.%]="pdfslider" class="slider-dot">
 
             </div>
             </div>
@@ -271,7 +294,7 @@
             <circle cx="105" cy="105" r="50" [style.--percent]="userdata.health_score"></circle>
           </svg> -->
           <div class="number">
-            <h3>{{userdata.health_score | number : '.2-2'}}<span>/100</span></h3>
+            <h3>{{userdata.health_score | number : '.2-2'}}<span>/100 points</span></h3>
           </div>
         </div>
         <!-- <div class="title">
@@ -332,12 +355,12 @@
                 <p class="m-0 sub-text">It is the proportional weight of body protein components to the total body weight. Adequate protein levels are essential for normal body function.</p>
             </div>
             <div class="ind-score">
-                <h3 class="m-0 sub-heading">Metabolic Age: {{userdata.metabolic_age}} Yrs <span class="not-standard">Not Standard</span></h3>
+                <h3 class="m-0 sub-heading">Metabolic Age: {{userdata.metabolic_age}} Yrs <span id="metabolic-age"></span></h3>
                 <p class="m-0 sub-text">It is the predicted age of the metabolism of your body. If your metabolic age higher than your actual age, its an indication that you need to improve metabolic rate.</p>
             </div>
         
             <div class="ind-score">
-                <h3 class="m-0 sub-heading">Basal Metabolic Rate: {{userdata.bmr}} kcal <span class="not-standard">Not Standard</span></h3>
+                <h3 class="m-0 sub-heading">Basal Metabolic Rate: {{userdata.bmr}} kcal <span id="bmr"></span></h3>
                 <p class="m-0 sub-text">The BMR or Basal Metabolic Rate is daily minimum of energy or calories your body requires when at rest (including sleeping) in order to function effectively</p>
             </div>
       </div>
@@ -463,4 +486,3 @@
 </div>
 </div>
 </div>
-<!-- <button (click)="downloadPDF()">Print</button> -->

@@ -2,12 +2,12 @@ import { ViewEncapsulation } from '@angular/compiler';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import  { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import  { Router } from '@angular/router';
 // import { error } from 'console';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-smartscale',
@@ -28,93 +28,254 @@ gender: any;
 bodyheight: any;
 test : any;
 sorted_data: any;
-
-  constructor(private http: HttpClient, private route: ActivatedRoute) { 
+interdata: any;
+userProfile: any;
+  userData: any;
+headers = {Authorization : "Token " + "0QDNtX8szxHiJ6xDMFGJpZLh03lWQaLD"}
+userDataUrl:any;
+email:any;
+age: any;
+sw: any;
+smm:any;
+bfp: any;
+weight: any;
+smmslider: any;
+bfmslider:any;
+bmislider:any;
+pdfslider:any;
+fulluserdata:any;
+smr: any;
+formattedDateNow :any;
+  constructor(private http: HttpClient, private par: ActivatedRoute) { 
     Chart.register(...registerables);
     Chart.register(ChartDataLabels);
     
   }
-  @ViewChild('maindiv', {static: false}) el!: ElementRef
+  url: any;
+  getUserProfile(): Promise<any> {
+    return new Promise<void>((resolve, reject) => {
+      this.http.get<any>(this.url, { headers: this.headers }).subscribe(
+        (data: any) => {
+          this.userProfile = data;
+          this.userDataUrl = `https://nucleus.actofit.com:3000/smartscale/v1/actofit/get_user_data/${this.userProfile.data.parent_id}`;
   
+          this.http.get<any>(this.userDataUrl, { headers: this.headers }).subscribe(
+            (data2: any) => {
+              data2.data.sort((a:any,b:any)=> a.createdAt - b.createdAt)
+              this.userData = data2.data[0];
+              this.fulluserdata = data2.data.slice(0,5)
+              resolve(this.userData);
+            },
+            error => {
+              reject(error)
+            }
+          );
+        },
+        error => {
+          reject(error);
+        }
+      );
+    });
+  }
+  @ViewChild('htmlToPdf') htmlToPdf!: ElementRef<HTMLDivElement>;
+  getAge(dateOfBirth: string): number {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  }
+   
+  // getUserData(): Promise<void> {
+  //   return new Promise<void>((resolve, reject) => {
+  //     this.userDataUrl = "https://nucleus.actofit.com:3000/smartscale/v1/actofit/get_user_data/5df9cdd21e6e5a43657be0cf"
+  //     this.http.get<any>(this.userDataUrl, { headers: this.headers }).subscribe(
+  //       (data:any)=> {
+  //         this.userData = data.data[0];  
+  //         console.log(this.userData);
+  //         resolve(this.userData);
+  //       },
+  //       error =>{
+  //         reject(error)
+  //         console.log("userdata", error) // Handle the error by rejecting the Promise
+
+  //       }
+  //     )
+  //   });
+  // }
+
+ 
 
  async ngOnInit(): Promise<void> {
-    const headers = {Authorization : "Token " + "0QDNtX8szxHiJ6xDMFGJpZLh03lWQaLD"}
-    this.markerwidth = document.querySelector(".slider-dot")?.clientWidth
-    this.weightslider= 70-this.markerwidth
+  
+    // this.weightslider= 70-
     this.divheight = document.getElementById("segmental-card")?.clientHeight
-    // var url = "https://nucleus.actofit.com:3000/smartscale/v1/actofit/get_user_data_mail/tester@actofit.com";
-    this.http.get<any>('https://nucleus.actofit.com:3000/smartscale/v1/actofit/get_profile?email=test@yopmail.com', {headers: headers}).subscribe(
-    data=>{
-        this.intuser = data
-        console.log(this.intuser)
+    await this.par.queryParams.subscribe(async params => {
+      // this.email = params['email']
+      this.email = "test@yopmail.com"
+      console.log(this.email);
+       this.url = `https://nucleus.actofit.com:3000/smartscale/v1/actofit/get_profile?email=${this.email}`
+       await this.getUserProfile();
+      });
 
-      }
-    )
-    this.userdata = await this.getUserData(headers);
-    console.log(this.userdata);
+    //current date and time 
+    const now = new Date();
+    const options2: Intl.DateTimeFormatOptions =  { day: '2-digit', month: '2-digit', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };    
+    this.formattedDateNow = now.toLocaleString('en-US', options2);
 
-
-    // this.http.get<any>('https://nucleus.actofit.com:3000/smartscale/v1/actofit/get_user_data/5df9cdd21e6e5a43657be0cf', {headers: headers}).subscribe(
-    // data=>{
-    //     this.userdata = data.data[0]
-    //     console.log(this.userdata)
-    //   }
-    // )
-    
+    this.userdata = await this.getUserProfile()
+    console.log(this.fulluserdata)
+    this.age = this.getAge(this.userProfile.data.date_of_birth)
+    // this.userdata = {
+    //   "bmr": 21
+    // }
     //test variables
       this.testvar = 5
-      this.gender = "Male"
-      this.bodyheight = 56.88
-    
+      this.gender = "male"
+      this.bodyheight = 170
+      this.weight = this.userData.weight
 
+    //body weight scale
+    if(this.gender == "male"){
+      this.sw = (this.bodyheight-80)*0.7
+    }
+    else if(this.gender == "female"){
+      this.sw = ((this.bodyheight*1.37)-110)*0.45
+    }
+
+    //skeletal muscle mass scale
+    if(this.gender == "male"){
+      this.smm = 49
+    }
+    else if(this.gender == "female"){
+      this.smm = 40
+    }
+
+    //body fat% scale
+    if(this.gender == "male"){
+      this.bfp = 11
+    }
+    else if(this.gender == "female"){
+      this.bfp = 21
+    }
+
+    //slider position
+      //weight
+      if(this.weight<this.smm){
+        this.weightslider = this.calculatePointerPosition(15, 0.80*this.sw,this.weight,5)
+      }
+      else if(this.weight<0.89*this.sw && this.weight>0.80*this.sw){
+        this.weightslider = this.calculatePointerPosition(0.80*this.sw, 0.89*this.sw,this.weight,5) + 20
+      }
+      else if(this.weight<1.09*this.sw && this.weight>0.89*this.sw){
+        this.weightslider = this.calculatePointerPosition(0.89*this.sw, 1.09*this.sw,this.weight,5) + 40
+      }
+      else if(this.weight<1.20*this.sw && this.weight>1.09*this.sw){
+        this.weightslider = this.calculatePointerPosition(1.09*this.sw, 1.20*this.sw,this.weight,5) + 60
+      }
+      else if(this.weight>1.20*this.sw){
+        this.weightslider = this.calculatePointerPosition(1.20*this.sw, 250,this.weight,5) + 80
+      }
+
+      //smm
+      if(this.userdata.skeletal_muscle<this.smm){
+        this.smmslider = this.calculatePointerPosition(0, this.smm,this.userdata.skeletal_muscle,3)
+      }
+      else if(this.userdata.skeletal_muscle<(this.smm+10) && this.userdata.skeletal_muscle>this.smm){
+        this.smmslider = this.calculatePointerPosition(this.smm, this.smm+10,this.userdata.skeletal_muscle,3) + 33
+      }
+      else if(this.userdata.skeletal_muscle>(this.smm+10)){
+        this.smmslider = this.calculatePointerPosition(this.smm+10, 100,this.userdata.skeletal_muscle,3) + 66
+      }
+
+      //bfm
+      if(this.userdata.body_fat<this.bfp*this.weight/100){
+        this.bfmslider = this.calculatePointerPosition(0, this.bfp*this.weight/100,this.userdata.body_fat,4)
+      }
+      else if(this.userdata.body_fat<(this.bfp*this.weight/100 +10) && this.userdata.body_fat>this.bfp*this.weight/100){
+        this.bfmslider = this.calculatePointerPosition(this.bfp*this.weight/100, this.bfp*this.weight/100+10,this.userdata.body_fat,4) + 25
+      }
+      else if(this.userdata.body_fat<(this.bfp*this.weight/100+15) && this.userdata.body_fat>this.bfp*this.weight/100+10){
+        this.bfmslider = this.calculatePointerPosition(this.bfp*this.weight/100+10, this.bfp*this.weight/100+15,this.userdata.body_fat,4) + 50
+      }
+      else if(this.userdata.body_fat>(this.bfp*this.weight/100+15)){
+        this.bfmslider = this.calculatePointerPosition(this.bfp*this.weight/100+15, this.weight,this.userdata.body_fat,4) + 75
+      }
+      //bfp
+      if(this.userdata.body_fat*this.weight/100<this.bfp){
+        this.pdfslider = this.calculatePointerPosition(0, this.bfp,this.userdata.body_fat*this.weight/100,4)
+      }
+      else if(this.userdata.body_fat*this.weight/100<(this.bfp +10) && this.userdata.body_fat*this.weight/100>this.bfp){
+        this.pdfslider = this.calculatePointerPosition(this.bfp, this.bfp+10,this.userdata.body_fat*this.weight/100,4) + 25
+      }
+      else if(this.userdata.body_fat*this.weight/100<(this.bfp+15) && this.userdata.body_fat*this.weight/100>this.bfp+10){
+        this.pdfslider = this.calculatePointerPosition(this.bfp+10, this.bfp+15,this.userdata.body_fat*this.weight/100,4) + 50
+      }
+      else if(this.userdata.body_fat*this.weight/100>(this.bfp+15)){
+        this.pdfslider = this.calculatePointerPosition(this.bfp+15, this.weight,this.userdata.body_fat*this.weight/100,4) + 75
+      }
+
+      //bmi
+      if(this.userdata.bmi<18.5){
+        this.bmislider = this.calculatePointerPosition(5, 18.5,this.userdata.bmi,3)
+      }
+      else if(this.userdata.bmi<25.0 && this.userdata.bmi>18.5){
+        this.bmislider = this.calculatePointerPosition(25.0, 18.5,this.userdata.bmi,3) + 33
+      }
+      else if(this.userdata.bmi>25.0){
+        this.bmislider = this.calculatePointerPosition(25.0, 60,this.userdata.bmi,3) + 66
+      }
 
     //visceral fat
-    if (this.testvar <= 9){
+    if (this.userdata.visceral_fat <= 9){
       document.getElementById("visceral-fat")?.classList.add("standard")
       const element: HTMLElement = document.getElementById('visceral-fat') as HTMLElement
       element.innerHTML = "Standard"
     }
-    else if (this.testvar > 10 && this.testvar <= 14){
+    else if (this.userdata.visceral_fat > 10 && this.userdata.visceral_fat <= 14){
       document.getElementById("visceral-fat")?.classList.add("not-standard")
       const element: HTMLElement = document.getElementById('visceral-fat') as HTMLElement
       element.innerHTML = "High"
     }
-    else if(this.testvar >14){
+    else if(this.userdata.visceral_fat >14){
       document.getElementById("visceral-fat")?.classList.add("not-standard")
       const element: HTMLElement = document.getElementById('visceral-fat') as HTMLElement
       element.innerHTML = "Seriously High"
     }
 
     //protein
-    if(this.gender=="Male"){
-      if(this.testvar < 16){
+    if(this.gender=="male"){
+      if(this.userdata.protein < 16){
         document.getElementById("protein")?.classList.add("low")
         const element: HTMLElement = document.getElementById('protein') as HTMLElement
         element.innerHTML = "Low"  
       }
-      else if(this.testvar >= 16 && this.testvar<=18){
+      else if(this.userdata.protein >= 16 && this.userdata.protein<=18){
         document.getElementById("protein")?.classList.add("standard")
         const element: HTMLElement = document.getElementById('protein') as HTMLElement
         element.innerHTML = "Standard"  
       }
-      else if(this.testvar > 18){
+      else if(this.userdata.protein > 18){
         document.getElementById("protein")?.classList.add("standard")
         const element: HTMLElement = document.getElementById('protein') as HTMLElement
         element.innerHTML = "Adequate"  
       }
     }
-    else if(this.gender=="Female"){
-      if(this.testvar < 14){
+    else if(this.gender=="female"){
+      if(this.userdata.protein < 14){
         document.getElementById("protein")?.classList.add("low")
         const element: HTMLElement = document.getElementById('protein') as HTMLElement
         element.innerHTML = "Low"  
       }
-      else if(this.testvar >= 14 && this.testvar<=16){
+      else if(this.userdata.protein >= 14 && this.userdata.protein<=16){
         document.getElementById("protein")?.classList.add("standard")
         const element: HTMLElement = document.getElementById('protein') as HTMLElement
         element.innerHTML = "Standard"  
       }
-      else if(this.testvar > 16){
+      else if(this.userdata.protein > 16){
         document.getElementById("protein")?.classList.add("standard")
         const element: HTMLElement = document.getElementById('protein') as HTMLElement
         element.innerHTML = "Adequate"  
@@ -122,35 +283,35 @@ sorted_data: any;
     }
 
     //subcutaneous fat
-    if(this.gender=="Male"){
-      if(this.testvar < 8.6){
+    if(this.gender=="male"){
+      if(this.userdata.subcutaneous_fat < 8.6){
         document.getElementById("subcutaneous-fat")?.classList.add("low")
         const element: HTMLElement = document.getElementById('subcutaneous-fat') as HTMLElement
         element.innerHTML = "Low"  
       }
-      else if(this.testvar >= 8.6 && this.testvar<=16.7){
+      else if(this.userdata.subcutaneous_fat >= 8.6 && this.userdata.subcutaneous_fat<=16.7){
         document.getElementById("subcutaneous-fat")?.classList.add("standard")
         const element: HTMLElement = document.getElementById('subcutaneous-fat') as HTMLElement
         element.innerHTML = "Standard"  
       }
-      else if(this.testvar > 16.7){
+      else if(this.userdata.subcutaneous_fat > 16.7){
         document.getElementById("subcutaneous-fat")?.classList.add("not-standard")
         const element: HTMLElement = document.getElementById('subcutaneous-fat') as HTMLElement
         element.innerHTML = "High"  
       }
     }
-    else if(this.gender=="Female"){
-      if(this.testvar < 18.5){
+    else if(this.gender=="female"){
+      if(this.userdata.subcutaneous_fat < 18.5){
         document.getElementById("subcutaneous-fat")?.classList.add("low")
         const element: HTMLElement = document.getElementById('subcutaneous-fat') as HTMLElement
         element.innerHTML = "Low"  
       }
-      else if(this.testvar >= 18.5 && this.testvar<=26.7){
+      else if(this.userdata.subcutaneous_fat >= 18.5 && this.userdata.subcutaneous_fat<=26.7){
         document.getElementById("subcutaneous-fat")?.classList.add("standard")
         const element: HTMLElement = document.getElementById('subcutaneous-fat') as HTMLElement
         element.innerHTML = "Standard"  
       }
-      else if(this.testvar > 26.7){
+      else if(this.userdata.subcutaneous_fat > 26.7){
         document.getElementById("subcutaneous-fat")?.classList.add("not-standard")
         const element: HTMLElement = document.getElementById('subcutaneous-fat') as HTMLElement
         element.innerHTML = "High"  
@@ -158,7 +319,7 @@ sorted_data: any;
     }
 
     //bone-mass
-    if(this.gender=="Male"){
+    if(this.gender=="male"){
       if(this.bodyheight<60){
         if(this.userdata.bone_mass < 2.3){
           document.getElementById("bone-mass")?.classList.add("low")
@@ -211,7 +372,7 @@ sorted_data: any;
         }
       }
     }
-    else if(this.gender =="Female"){
+    else if(this.gender =="female"){
       if(this.bodyheight<45){
         if(this.userdata.bone_mass < 1.6){
           document.getElementById("bone-mass")?.classList.add("low")
@@ -266,32 +427,100 @@ sorted_data: any;
     }
 
     //metabolic age 
+    if(this.userdata.metabolic_age <= this.age){
+      document.getElementById("metabolic-age")?.classList.add("standard")
+      const element: HTMLElement = document.getElementById('metabolic-age') as HTMLElement
+      element.innerHTML = "Standard"  
+    }
+    else{
+      document.getElementById("metabolic-age")?.classList.add("not-standard")
+      const element: HTMLElement = document.getElementById('metabolic-age') as HTMLElement
+      element.innerHTML = "Not Standard" 
+    }
 
+    //metabolic rate
+    if(this.gender == "male"){
+      if(this.age>=18 && this.age<=29){
+        this.smr = this.weight*24
+      }
+      else if(this.age>=30 && this.age<=49){
+        this.smr = this.weight*22.3
+      }
+      else if(this.age>=50 && this.age<=69){
+        this.smr = this.weight*21.5
+      }
+      else if(this.age>=70){
+        this.smr = this.weight*21.5
+      }
+    }
+    else if(this.gender == "female"){
+      if(this.age>=18 && this.age<=29){
+        this.smr = this.weight*23.6
+      }
+      else if(this.age>=30 && this.age<=49){
+        this.smr = this.weight*21.7
+      }
+      else if(this.age>=50 && this.age<=69){
+        this.smr = this.weight*20.7
+      }
+      else if(this.age>=70){
+        this.smr = this.weight*20.7
+      }
+    }
+
+    if(this.userdata.bmr >= this.smr){
+      document.getElementById("bmr")?.classList.add("standard")
+      const element: HTMLElement = document.getElementById('bmr') as HTMLElement
+      element.innerHTML = "Standard" 
+    }
+    else if(this.userdata.bmr < this.smr){
+      document.getElementById("bmr")?.classList.add("not-standard")
+      const element: HTMLElement = document.getElementById('bmr') as HTMLElement
+      element.innerHTML = "Not Standard" 
+
+    }
 
 
     //
-    const data = [
-      { year: 2010, count: 10 },
-      { year: 2011, count: 20 },
-      { year: 2012, count: 15 },
-      { year: 2013, count: 25 },
-      { year: 2014, count: 22 },
-      // { year: 2015, count: 30 },
-      // { year: 2016, count: 28 },
+    // const data = [
+    //   { year: 2010, count: 10 },
+    //   { year: 2011, count: 20 },
+    //   { year: 2012, count: 15 },
+    //   { year: 2013, count: 25 },
+    //   { year: 2014, count: 22 },
+    //   // { year: 2015, count: 30 },
+    //   // { year: 2016, count: 28 },
+    // ];
+    const weightdata = [
+      { year: this.formatDate(this.fulluserdata[0].createdAt), count: this.fulluserdata[0].weight },
+      { year: this.formatDate(this.fulluserdata[1].createdAt), count: this.fulluserdata[1].weight },
+      { year: this.formatDate(this.fulluserdata[2].createdAt), count: this.fulluserdata[2].weight },
+      { year: this.formatDate(this.fulluserdata[3].createdAt), count: this.fulluserdata[3].weight },
+      { year: this.formatDate(this.fulluserdata[4].createdAt), count: this.fulluserdata[4].weight },
     ];
+    const smmdata = [
+      { year: this.formatDate(this.fulluserdata[0].createdAt), count: this.fulluserdata[0].skeletal_muscle },
+      { year: this.formatDate(this.fulluserdata[1].createdAt), count: this.fulluserdata[1].skeletal_muscle },
+      { year: this.formatDate(this.fulluserdata[2].createdAt), count: this.fulluserdata[2].skeletal_muscle },
+      { year: this.formatDate(this.fulluserdata[3].createdAt), count: this.fulluserdata[3].skeletal_muscle },
+      { year: this.formatDate(this.fulluserdata[4].createdAt), count: this.fulluserdata[4].skeletal_muscle },
+    ];
+    const bfmdata = [
+      { year: this.formatDate(this.fulluserdata[0].createdAt), count: this.fulluserdata[0].body_fat },
+      { year: this.formatDate(this.fulluserdata[1].createdAt), count: this.fulluserdata[1].body_fat },
+      { year: this.formatDate(this.fulluserdata[2].createdAt), count: this.fulluserdata[2].body_fat },
+      { year: this.formatDate(this.fulluserdata[3].createdAt), count: this.fulluserdata[3].body_fat },
+      { year: this.formatDate(this.fulluserdata[4].createdAt), count: this.fulluserdata[4].body_fat },
+    ];
+
     const testdata = [
-      { year: 2010, count: '' },
-      { year: 2011, count: '' },
-      { year: 2012, count: '' },
-      { year: 2013, count: '' },
-      { year: 2014, count: '' },
-      // { year: 2015, count: 30 },
-      // { year: 2016, count: 28 },
+      { year: this.formatDate(this.fulluserdata[0].createdAt), count: '' },
+      { year: this.formatDate(this.fulluserdata[1].createdAt), count: '' },
+      { year: this.formatDate(this.fulluserdata[2].createdAt), count: '' },
+      { year: this.formatDate(this.fulluserdata[3].createdAt), count: '' },
+      { year: this.formatDate(this.fulluserdata[4].createdAt), count: '' },
     ];
-    const data2 = [
-      { year: 2010, count: this.weightslider },
-      { year: 2011, count: 100-this.weightslider },
-    ];
+    
 
     var weightChart=new Chart(
       "weightChart",
@@ -328,11 +557,11 @@ sorted_data: any;
           aspectRatio: 4
         },
         data: {
-          labels: data.map(row => row.year),
+          labels: weightdata.map(row => row.year),
           datasets: [
             {
-              label: 'Acquisitions by year',
-              data: data.map(row => row.count),
+              label: 'Weight',
+              data: weightdata.map(row => row.count),
               pointBackgroundColor: '#3B8177',
             }
           ]
@@ -374,11 +603,11 @@ sorted_data: any;
           aspectRatio: 4
         },
         data: {
-          labels: data.map(row => row.year),
+          labels: smmdata.map(row => row.year),
           datasets: [
             {
-              label: 'Acquisitions by year',
-              data: data.map(row => row.count),
+              label: 'Skeletal Muscle Mass',
+              data: smmdata.map(row => row.count),
               pointBackgroundColor: '#3B8177',
             }
           ]
@@ -472,69 +701,69 @@ sorted_data: any;
           aspectRatio: 4
         },
         data: {
-          labels: data.map(row => row.year),
+          labels: bfmdata.map(row => row.year),
           datasets: [
             {
-              label: 'Acquisitions by year',
-              data: data.map(row => row.count),
+              label: 'Body Fat Mass',
+              data: bfmdata.map(row => row.count),
               pointBackgroundColor: '#3B8177',
             }
           ]
         }
       }
     );
-    var actoscore=new Chart(
-      "actoscore",
-      {
-        type: 'doughnut',
-        plugins: [ChartDataLabels],
-        options:{
-          plugins:{
-            datalabels:{
-              align: 'start',
-              clip: false,
-              color: "white",
-              font:{
-                size: 23,
-                weight: "bold"
-              } 
-            },
-            legend:{
-              display: false
-            },
-            tooltip:{
-              enabled: false
-            }
-          },
-          scales:{
-            y:{
-              display: false
-            },
-            x:{
-              grid:{
-                display: false
-              },
-              display: false
-            }
-          },
-          layout:{
-            padding:{
-              // bottom: 20,
-              right: 20
-            }
-          },
-        },
-        data: {
-          labels: data2.map(row => row.year),
-          datasets: [
-            {
-              label: 'Acquisitions by year',
-              data: data2.map(row => row.count)
-            }
-          ]
-        }
-      }
-    );
+  //   var actoscore=new Chart(
+  //     "actoscore",
+  //     {
+  //       type: 'doughnut',
+  //       plugins: [ChartDataLabels],
+  //       options:{
+  //         plugins:{
+  //           datalabels:{
+  //             align: 'start',
+  //             clip: false,
+  //             color: "white",
+  //             font:{
+  //               size: 23,
+  //               weight: "bold"
+  //             } 
+  //           },
+  //           legend:{
+  //             display: false
+  //           },
+  //           tooltip:{
+  //             enabled: false
+  //           }
+  //         },
+  //         scales:{
+  //           y:{
+  //             display: false
+  //           },
+  //           x:{
+  //             grid:{
+  //               display: false
+  //             },
+  //             display: false
+  //           }
+  //         },
+  //         layout:{
+  //           padding:{
+  //             // bottom: 20,
+  //             right: 20
+  //           }
+  //         },
+  //       },
+  //       data: {
+  //         labels: data2.map(row => row.year),
+  //         datasets: [
+  //           {
+  //             label: 'Acquisitions by year',
+  //             data: data2.map(row => row.count)
+  //           }
+  //         ]
+  //       }
+  //     }
+  //   );
     
   }
   // chart: Configuration = {
@@ -577,19 +806,79 @@ sorted_data: any;
 onPrint(){
     this.printscreen = document.getElementsByTagName("body");
 }
-getUserData(headers: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    this.http.get<any>('https://nucleus.actofit.com:3000/smartscale/v1/actofit/get_user_data/5df9cdd21e6e5a43657be0cf', {headers: headers}).subscribe(
-      data => {
-        // console.log(data.length())
-        data.data.sort((a:any,b:any)=> a.createdAt - b.createdAt).reverse()
-        resolve(data.data[0]);
-      },
-      error => {
-        reject(error);
-      }
-    );
+calculatePointerPosition(minValue:any, maxValue:any, value:any, n:any){
+  const tickInterval = (maxValue - minValue);
+  const tickIndex = (value - minValue) / tickInterval;
+  this.markerwidth = document.querySelector(".slider-dot")?.clientWidth
+  const pointerPosition = tickIndex*100/n;
+  return pointerPosition
+}
+formatDate(isoDate: any){
+const date = new Date(isoDate);
+const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
+const formattedDate = date.toLocaleDateString('en-US', options);
+return formattedDate
+}
+// getUserID(url:any, headers:any): Promise<any>{
+//   return new Promise((resolve, reject) => {
+//       this.http.get<any>(url, {headers: headers}).subscribe(
+//         data=>{
+//             this.intuser = data
+//             resolve(data.parent_id)
+//           },
+//         error =>{
+//           reject(error)
+//         }
+//         )
+//   })
+// }
+// getUserData(userid:any, headers: any): Promise<any> {
+//   // var userid = await this.getUserID(headers)
+//   return new Promise((resolve, reject) => {
+//     var url2 = 'https://nucleus.actofit.com:3000/smartscale/v1/actofit/get_user_data/'+userid
+//     this.http.get<any>(url2, {headers: headers}).subscribe(
+//       data => {
+//         // console.log(data.length())
+//         data.data.sort((a:any,b:any)=> a.createdAt - b.createdAt).reverse()
+//         resolve(data.data[0]);
+//       },
+//       error => {
+//         reject(error);
+//       }
+//     );
+//   });
+// }
+generatePDF() {
+  window.scrollTo(0, 0);
+  // document.querySelector('meta[name=viewport]').setAttribute("content", "width=1200");
+  // const element = document.querySelector('#elementToCapture') as HTMLElement;
+  const element = document.body
+  html2canvas(element, {scale: window.devicePixelRatio}).then(canvas => {
+    // create a new PDF document
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    
+    // calculate the width and height of the image on the PDF
+    const imgWidth = pdf.internal.pageSize.getWidth() ;
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+    // add the image to the PDF
+    pdf.addImage(canvas.toDataURL(), 'PNG', 2, 5, imgWidth, imgHeight);
+    // save the PDF
+    pdf.save('screenshot.pdf');
+  
   });
+}
+generatePDF2(){
+  var doc = new jsPDF('portrait', 'pt', 'a4');
+
+doc.html(document.body, {
+   callback: function (doc) {
+     doc.save("test.pdf");
+   },
+   x: 5,
+   y: 5,
+   width: doc.internal.pageSize.getWidth() ,
+   
+});
 }
 }
 

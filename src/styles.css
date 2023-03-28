@@ -12,12 +12,17 @@
 
 .page-content{
     max-width: 1500px !important;
-    padding: 10px !important;
+    padding: 0px !important;
 }
 .page-wrapper{
     height: auto !important;
 }
-
+/* body{
+    width: 1336px;
+} */
 .mat-drawer-content{
     overflow: hidden !important;
+}
+.mat-drawer-container{
+    background-color: white !important;
 }
