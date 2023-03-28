@@ -439,3 +439,15 @@ canvas{
 .negzindex{
     z-index: -1 !important;
 }
+
+.blur-overlay{
+    background: rgba(208, 208, 208, 0.15);
+  box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
