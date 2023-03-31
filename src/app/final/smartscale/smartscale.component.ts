@@ -8,12 +8,21 @@ import  { Router } from '@angular/router';
 // import { error } from 'console';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import domToImage from 'dom-to-image';
+import * as FileSaver from 'file-saver';
+
+declare module 'jspdf' {
+  interface jsPDF {
+    addHTML: (element: any, x?: number, y?: number, options?: any) => any;
+  }
+}
 
 @Component({
   selector: 'app-smartscale',
   templateUrl: './smartscale.component.html',
   styleUrls: ['./smartscale.component.css']
 })
+
 
 
 export class SmartscaleComponent implements OnInit {
@@ -58,7 +67,7 @@ dataExists: boolean = false;
       this.http.get<any>(this.url, { headers: this.headers }).subscribe(
         (data: any) => {
           this.userProfile = data;
-          this.userDataUrl = `https://nucleus.actofit.com:3000/smartscale/v1/actofit/get_user_data/${this.userProfile.data.parent_id}`;
+          this.userDataUrl = `https://nucleus.actofit.com:3000/smartscale/v1/actofit/get_user_data/${this.userProfile.data._id}`;
           this.dataExists = true;
           this.http.get<any>(this.userDataUrl, { headers: this.headers }).subscribe(
             (data2: any) => {
@@ -86,10 +95,13 @@ dataExists: boolean = false;
       
     });
   }
-  @ViewChild('htmlToPdf') htmlToPdf!: ElementRef<HTMLDivElement>;
+  @ViewChild('elementToCapture') elementToCapture!: ElementRef<HTMLDivElement>;
+
   getAge(dateOfBirth: string): number {
     const today = new Date();
-    const birthDate = new Date(dateOfBirth);
+    const [d, m, y] = dateOfBirth.split('/');
+    const dateObj = new Date(`${y}-${m}-${d}`);
+    const birthDate = new Date(dateObj);
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDifference = today.getMonth() - birthDate.getMonth();
     if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
@@ -124,7 +136,7 @@ dataExists: boolean = false;
     await this.par.queryParams.subscribe(async params => {
       this.email = params['email']
       // this.email = "test@yopmail.com"
-      // console.log(this.email);
+      console.log(this.email);
        this.url = `https://nucleus.actofit.com:3000/smartscale/v1/actofit/get_profile?email=${this.email}`
        await this.getUserProfile();
       });
@@ -135,8 +147,7 @@ dataExists: boolean = false;
     this.formattedDateNow = now.toLocaleString('en-US', options2);
 
     this.userdata = await this.getUserProfile()
-    
-    console.log(this.userdata)
+    // const newdate = new Date(this.userProfile.data.date_of_birth)
     this.age = this.getAge(this.userProfile.data.date_of_birth)
     // this.userdata = {
     //   "bmr": 21
@@ -461,6 +472,7 @@ dataExists: boolean = false;
       else if(this.age>=70){
         this.smr = this.weight*21.5
       }
+      console.log(this.smr)
     }
     else if(this.gender == "female"){
       if(this.age>=18 && this.age<=29){
@@ -478,17 +490,25 @@ dataExists: boolean = false;
     }
 
     if(this.userdata.bmr >= this.smr){
+      console.log("standard")
+
       document.getElementById("bmr")?.classList.add("standard")
       const element: HTMLElement = document.getElementById('bmr') as HTMLElement
       element.innerHTML = "Standard" 
     }
     else if(this.userdata.bmr < this.smr){
+      console.log("not standard")
       document.getElementById("bmr")?.classList.add("not-standard")
       const element: HTMLElement = document.getElementById('bmr') as HTMLElement
       element.innerHTML = "Not Standard" 
 
     }
-
+    console.log(this.userdata.right_arm_fat)
+    //fat analysis
+    if(this.userdata.right_arm_fat == undefined){
+      document.getElementById("fat-overlay")?.classList.add("show")
+    }
+    
 
     //
     // const data = [
@@ -501,33 +521,33 @@ dataExists: boolean = false;
     //   // { year: 2016, count: 28 },
     // ];
     const weightdata = [
-      { year: this.formatDate(this.fulluserdata[0].createdAt), count: this.fulluserdata[0].weight },
-      { year: this.formatDate(this.fulluserdata[1].createdAt), count: this.fulluserdata[1].weight },
-      { year: this.formatDate(this.fulluserdata[2].createdAt), count: this.fulluserdata[2].weight },
-      { year: this.formatDate(this.fulluserdata[3].createdAt), count: this.fulluserdata[3].weight },
       { year: this.formatDate(this.fulluserdata[4].createdAt), count: this.fulluserdata[4].weight },
+      { year: this.formatDate(this.fulluserdata[3].createdAt), count: this.fulluserdata[3].weight },
+      { year: this.formatDate(this.fulluserdata[2].createdAt), count: this.fulluserdata[2].weight },
+      { year: this.formatDate(this.fulluserdata[1].createdAt), count: this.fulluserdata[1].weight },
+      { year: this.formatDate(this.fulluserdata[0].createdAt), count: this.fulluserdata[0].weight },
     ];
     const smmdata = [
-      { year: this.formatDate(this.fulluserdata[0].createdAt), count: this.fulluserdata[0].skeletal_muscle },
-      { year: this.formatDate(this.fulluserdata[1].createdAt), count: this.fulluserdata[1].skeletal_muscle },
-      { year: this.formatDate(this.fulluserdata[2].createdAt), count: this.fulluserdata[2].skeletal_muscle },
-      { year: this.formatDate(this.fulluserdata[3].createdAt), count: this.fulluserdata[3].skeletal_muscle },
       { year: this.formatDate(this.fulluserdata[4].createdAt), count: this.fulluserdata[4].skeletal_muscle },
+      { year: this.formatDate(this.fulluserdata[3].createdAt), count: this.fulluserdata[3].skeletal_muscle },
+      { year: this.formatDate(this.fulluserdata[2].createdAt), count: this.fulluserdata[2].skeletal_muscle },
+      { year: this.formatDate(this.fulluserdata[1].createdAt), count: this.fulluserdata[1].skeletal_muscle },
+      { year: this.formatDate(this.fulluserdata[0].createdAt), count: this.fulluserdata[0].skeletal_muscle },
     ];
     const bfmdata = [
-      { year: this.formatDate(this.fulluserdata[0].createdAt), count: this.fulluserdata[0].body_fat },
-      { year: this.formatDate(this.fulluserdata[1].createdAt), count: this.fulluserdata[1].body_fat },
-      { year: this.formatDate(this.fulluserdata[2].createdAt), count: this.fulluserdata[2].body_fat },
-      { year: this.formatDate(this.fulluserdata[3].createdAt), count: this.fulluserdata[3].body_fat },
       { year: this.formatDate(this.fulluserdata[4].createdAt), count: this.fulluserdata[4].body_fat },
+      { year: this.formatDate(this.fulluserdata[3].createdAt), count: this.fulluserdata[3].body_fat },
+      { year: this.formatDate(this.fulluserdata[2].createdAt), count: this.fulluserdata[2].body_fat },
+      { year: this.formatDate(this.fulluserdata[1].createdAt), count: this.fulluserdata[1].body_fat },
+      { year: this.formatDate(this.fulluserdata[0].createdAt), count: this.fulluserdata[0].body_fat },
     ];
 
     const testdata = [
-      { year: this.formatDate(this.fulluserdata[0].createdAt), count: '' },
-      { year: this.formatDate(this.fulluserdata[1].createdAt), count: '' },
-      { year: this.formatDate(this.fulluserdata[2].createdAt), count: '' },
-      { year: this.formatDate(this.fulluserdata[3].createdAt), count: '' },
       { year: this.formatDate(this.fulluserdata[4].createdAt), count: '' },
+      { year: this.formatDate(this.fulluserdata[3].createdAt), count: '' },
+      { year: this.formatDate(this.fulluserdata[2].createdAt), count: '' },
+      { year: this.formatDate(this.fulluserdata[1].createdAt), count: '' },
+      { year: this.formatDate(this.fulluserdata[0].createdAt), count: '' },
     ];
     
 
@@ -537,20 +557,28 @@ dataExists: boolean = false;
         type: 'line',
         plugins: [ChartDataLabels],
         options:{
-          borderColor: '#3B8177',          
+          borderColor: '#3B8177', 
+                   
           plugins:{
             datalabels:{
               align: 'start',
-              clip: false
+              clip: false,
+              formatter: function(value, context) {
+                return Math.round(value * 100) / 100;
+              }
             },
             legend:{
               display: false
-            }
+            },
+            
           },
+        
           scales:{
             y:{
-              display: false
+              display: false,
+              
             },
+            
             x:{
               display: false
             }
@@ -563,7 +591,8 @@ dataExists: boolean = false;
               top: 30
             }
           },
-          aspectRatio: 4
+          aspectRatio: 4,
+          
         },
         data: {
           labels: weightdata.map(row => row.year),
@@ -572,8 +601,11 @@ dataExists: boolean = false;
               label: 'Weight',
               data: weightdata.map(row => row.count),
               pointBackgroundColor: '#3B8177',
-            }
-          ]
+              
+            },
+            
+          ],
+        
         }
       }
     );
@@ -587,7 +619,10 @@ dataExists: boolean = false;
           plugins:{
             datalabels:{
               align: 'start',
-              clip: false
+              clip: false,
+              formatter: function(value, context) {
+                return Math.round(value * 100) / 100;
+              }
             },
             legend:{
               display: false
@@ -633,7 +668,10 @@ dataExists: boolean = false;
           plugins:{
             datalabels:{
               align: 'start',
-              clip: false
+              clip: false,
+              formatter: function(value, context) {
+                return Math.round(value * 100) / 100;
+              }
             },
             legend:{
               display: false
@@ -685,11 +723,15 @@ dataExists: boolean = false;
           plugins:{
             datalabels:{
               align: 'start',
-              clip: false
+              clip: false,
+              formatter: function(value, context) {
+                return Math.round(value * 100) / 100;
+              }
             },
             legend:{
               display: false
-            }
+            },
+            
           },
           scales:{
             y:{
@@ -775,6 +817,16 @@ dataExists: boolean = false;
   //   );
     
   }
+  // async generatePDF4() {
+  //   const browser = await puppeteer.launch();
+  //   const page = await browser.newPage();
+  //   await page.goto('http://localhost:4200', { waitUntil: 'networkidle0' });
+  //   const pdf = await page.pdf({ format: 'A4' });
+  //   await browser.close();
+  //   const blob = new Blob([pdf], { type: 'application/pdf' });
+  //   const url = URL.createObjectURL(blob);
+  //   window.open(url);
+  // }
   // chart: Configuration = {
   //   // Specify the type of chart and the rest of the config will be typed
   //   type: "Bar",
@@ -862,7 +914,7 @@ generatePDF() {
   // document.querySelector('meta[name=viewport]').setAttribute("content", "width=1200");
   // const element = document.querySelector('#elementToCapture') as HTMLElement;
   const element = document.body
-  html2canvas(element, {scale: window.devicePixelRatio}).then(canvas => {
+  html2canvas(element, {scale: 1}).then(canvas => {
     // create a new PDF document
     const pdf = new jsPDF('p', 'mm', 'a4');
     
@@ -872,22 +924,52 @@ generatePDF() {
     // add the image to the PDF
     pdf.addImage(canvas.toDataURL(), 'PNG', 2, 5, imgWidth, imgHeight);
     // save the PDF
-    pdf.save('screenshot.pdf');
+    pdf.save('screenshot.pdf', );
   
   });
 }
-generatePDF2(){
-  var doc = new jsPDF('portrait', 'pt', 'a4');
+// generatePDF3() {
+//   var pdf = new jsPDF('p', 'pt', 'letter');
+//   pdf.addHTML(document.getElementById("elementToCapture"), 0 , 0, function () {
+//      pdf.save('Test.pdf');
+//  });
+// }
+// generatePDF2(){
+//   var doc = new jsPDF('portrait', 'pt', 'a4');
 
-doc.html(document.body, {
-   callback: function (doc) {
-     doc.save("test.pdf");
-   },
-   x: 5,
-   y: 5,
-   width: doc.internal.pageSize.getWidth() ,
-   
-});
+// doc.html(document.body, {
+//    callback: function (doc) {
+//      doc.save("test.pdf");
+//    },
+//    x: 5,
+//    y: 5,
+//    width: doc.internal.pageSize.getWidth() ,
+// });
+// }
+
+generatePDF2() {
+  const node = this.elementToCapture.nativeElement;
+  // domToImage.toPng(node).then((dataUrl) => {
+  //   const pdf = new jsPDF();
+  //   pdf.addImage(dataUrl, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+  //   pdf.save('screenshot.pdf');
+  // });
+  domToImage.toPng(node).then((dataUrl) => {
+    // Create a blob from the data URL
+    const blob = this.dataURItoBlob(dataUrl);
+    // Save the blob as a PNG file using file-saver
+    FileSaver.saveAs(blob, 'screenshot.png');
+  });
+}
+dataURItoBlob(dataURI: any) {
+  const byteString = atob(dataURI.split(',')[1]);
+  const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], { type: mimeString });
 }
 }
 

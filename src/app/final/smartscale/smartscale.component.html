@@ -44,7 +44,7 @@
         </div>
     </mat-card-content>
 </mat-card>
-<button (click)="generatePDF()" class="print-button heading ">Print</button>
+<button (click)="generatePDF2()" class="print-button heading ">Print</button>
 <div class="upper-section" fxLayout="row" fxLayoutWrap="wrap">
 <div class="analysis-section" fxFlex.gt-sm="50%">
 <!---body-composition-->
@@ -60,7 +60,7 @@
                 <p class="m-0">Total fat in your body that include fat around your organs and below your organs and below your skin.</p>    
             </div>
             <div class="col-2" fxFlex.gt-sm="15%" style="background-color: #F6F9FC; border-radius: 0rem 1rem 0rem 0rem;">
-            <p>{{userdata.body_fat}}Kg</p>
+            <p>{{userdata.body_fat | number : '.2-2'}}Kg</p>
             </div>
             </div>
     </div>
@@ -74,7 +74,7 @@
             <p class="m-0">Your muscle, Bone, Body water and other Tissue weight</p>    
         </div>
         <div class="col-2" fxFlex.gt-sm="15%" style="background-color: #F6F9FC;">
-        <p>{{userdata.fat_free_weight}}Kg</p>
+        <p>{{userdata.fat_free_weight | number : '.2-2'}}Kg</p>
         </div>
         </div>
 </div>
@@ -88,7 +88,7 @@
         <p class="m-0">Sum of the above</p>    
     </div>
     <div class="col-2" fxFlex.gt-sm="15%" style="background-color: #F6F9FC; border-radius: 0rem 0rem 1rem 0rem;">
-    <p>{{userdata.weight}}Kg</p>
+    <p>{{userdata.weight | number : '.2-2'}}Kg</p>
     </div>
     </div>
 </div>
@@ -116,7 +116,7 @@
     <div class="table-row">
         <div fxLayout="row" fxLayoutWrap="wrap" class="table-row-2">
         <div class="col-1" fxFlex.gt-sm="25%">
-            Weight ({{userdata.weight}}Kg)
+            Weight ({{userdata.weight | number : '.2-2'}}Kg)
         </div>
         <div class="col-2 m-t-5" fxFlex.gt-sm="75%" fxLayout="row" fxLayoutWrap="wrap">
             <div class="slider-section" fxFlex.gt-sm="20%" width="20%">   
@@ -156,7 +156,7 @@
         </div>
         <div fxLayout="row" fxLayoutWrap="wrap" class="table-row-2">
         <div class="col-1" fxFlex.gt-sm="25%">
-            SMM ({{userdata.skeletal_muscle}}%)<br>
+            SMM ({{userdata.skeletal_muscle | number : '.2-2'}}%)<br>
             <span class="sub-text">(Skeletal Muscle Mass)</span>
         </div>
         <div class="col-2 m-t-5" fxFlex.gt-sm="75%" fxLayout="row" fxLayoutWrap="wrap">
@@ -182,7 +182,7 @@
         </div>
         <div fxLayout="row" fxLayoutWrap="wrap" class="table-row-2">
             <div class="col-1" fxFlex.gt-sm="25%">
-                BFM ({{userdata.body_fat}}Kg)<br>
+                BFM ({{userdata.body_fat | number : '.2-2'}}Kg)<br>
                 <span class="sub-text"> (Body Fat Mass)</span>
             </div>
             <div class="col-2 m-t-5" fxFlex.gt-sm="75%" fxLayout="row" fxLayoutWrap="wrap">
@@ -337,11 +337,11 @@
                 </p>
             </div>
             <div class="ind-score">
-                <h3 class="m-0 sub-heading">Bone Mass: {{userdata.bone_mass}}Kg <span id="bone-mass"></span></h3>
+                <h3 class="m-0 sub-heading">Bone Mass: {{userdata.bone_mass | number : '.2-2'}}Kg <span id="bone-mass"></span></h3>
                 <p class="m-0 sub-text">This is the weight of total bone tissue (Bone minerals + Bone matrix) in your body. Higher bone mass indicates better bone health.</p>
             </div>
             <div class="ind-score">
-                <h3 class="m-0 sub-heading">Body Water: {{userdata.body_water}}% 33.41 Ltr <span class="standard">Standard</span></h3>
+                <h3 class="m-0 sub-heading">Body Water: {{userdata.body_water | number : '.2-2'}}% 33.41 Ltr <span class="standard">Standard</span></h3>
                 <p class="m-0 sub-text">It’s the total amount of fluid in the body expressed as % of total weight. Lower body water % affects the essential body processes.</p>
             </div>
             <div class="ind-score">
@@ -350,11 +350,11 @@
             </div>
          
             <div class="ind-score">
-                <h3 class="m-0 sub-heading">Subcutaneous Fat: {{userdata.subcutaneous_fat}}% <span id="subcutaneous-fat"></span></h3>
+                <h3 class="m-0 sub-heading">Subcutaneous Fat: {{userdata.subcutaneous_fat | number : '.2-2'}}% <span id="subcutaneous-fat"></span></h3>
                 <p class="m-0 sub-text">It is the proportional weight of fat below the skin to the total body weight. Higher subcutaneous fat value is an indicator of bad physical health.</p>
             </div>
             <div class="ind-score">
-                <h3 class="m-0 sub-heading">Protein: {{userdata.protein}}% <span id="protein">Low</span></h3>
+                <h3 class="m-0 sub-heading">Protein: {{userdata.protein | number : '.2-2'}}% <span id="protein">Low</span></h3>
                 <p class="m-0 sub-text">It is the proportional weight of body protein components to the total body weight. Adequate protein levels are essential for normal body function.</p>
             </div>
             <div class="ind-score">
@@ -416,39 +416,41 @@
 <div class="segmental" fxFlex.gt-sm="50%">
     <h3 class="heading">Segmental Analysis</h3>
 <mat-card class="card-main"  fxLayout="row" fxLayoutWrap="wrap" id="segmental-card" style="height: 500px">
-    <div class="blur-overlay"></div>
+    <div class="blur-overlay" id="fat-overlay">
+        <p>To see segmental analysis use Smartscale Pro and Pro Max</p>
+    </div>
     <div class="analysiscol" fxFlex.gt-sm="50%">
         <h4 class="heading" style="text-align: center;">Fat Analysis</h4>
         <img src="assets/images/fatanalysis.png" class="an-img">
         <div class="an-details right-arm">
             <img src="assets/images/rightarm.png" style="width: 40px;">
             <p class="head-text">Right Arm</p>
-            <p class="head-value">Fat: <b>3.06 Kg</b></p>
-            <p class="percent-value high">209.65% High</p>
+            <p class="head-value">Fat: <b>{{userdata.right_arm_fat_kg | number : '.2-2'}} Kg</b></p>
+            <p class="percent-value high">{{userdata.right_arm_fat | number : '.2-2'}}% High</p>
         </div>
         <div class="an-details left-arm">
             <img src="assets/images/leftarm.png" style="width: 40px;">
             <p class="head-text">Left Arm</p>
-            <p class="head-value">Fat: <b>3.06 Kg</b></p>
-            <p class="percent-value high">209.65% High</p>
+            <p class="head-value">Fat: <b>{{userdata.left_arm_fat_kg | number : '.2-2'}} Kg</b></p>
+            <p class="percent-value high">{{userdata.left_arm_fat | number : '.2-2'}}% High</p>
         </div>
         <div class="an-details trunk">
             <img src="assets/images/trunk.png" style="width: 40px;">
             <p class="head-text">Trunk</p>
-            <p class="head-value">Fat: <b>3.06 Kg</b></p>
-            <p class="percent-value high">209.65% High</p>
+            <p class="head-value">Fat: <b>{{userdata.trunk_fat_kg | number : '.2-2'}} Kg</b></p>
+            <p class="percent-value high">{{userdata.trunk_fat | number : '.2-2'}}% High</p>
         </div>
         <div class="an-details right-leg">
             <img src="assets/images/rightleg.png" style="width: 40px;">
             <p class="head-text">Right Leg</p>
-            <p class="head-value">Fat: <b>3.06 Kg</b></p>
-            <p class="percent-value high">209.65% High</p>
+            <p class="head-value">Fat: <b>{{userdata.right_leg_fat_kg | number : '.2-2'}} Kg</b></p>
+            <p class="percent-value high">{{userdata.right_leg_fat | number : '.2-2'}}% High</p>
         </div>
         <div class="an-details left-leg">
             <img src="assets/images/leftleg.png" style="width: 40px;">
-            <p class="head-text">Left Lef</p>
-            <p class="head-value">Fat: <b>3.06 Kg</b></p>
-            <p class="percent-value high">209.65% High</p>
+            <p class="head-text">Left Leg</p>
+            <p class="head-value">Fat: <b>{{userdata.left_leg_fat_kg | number : '.2-2'}} Kg</b></p>
+            <p class="percent-value high">{{userdata.right_leg_fat | number : '.2-2'}}% High</p>
         </div>
     </div>
     <div class="analysiscol" fxFlex.gt-sm="50%">
@@ -457,32 +459,32 @@
         <div class="an-details right-arm">
             <img src="assets/images/rightarm.png" style="width: 40px;">
             <p class="head-text">Right Arm</p>
-            <p class="head-value">Fat: <b>3.06 Kg</b></p>
-            <p class="percent-value high">209.65% High</p>
+            <p class="head-value">Fat: <b>{{userdata.right_arm_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+            <p class="percent-value high">{{userdata.right_arm_muscle_mass | number : '.2-2'}}% High</p>
         </div>
         <div class="an-details left-arm">
             <img src="assets/images/leftarm.png" style="width: 40px;">
             <p class="head-text">Left Arm</p>
-            <p class="head-value">Fat: <b>3.06 Kg</b></p>
-            <p class="percent-value high">209.65% High</p>
+            <p class="head-value">Fat: <b>{{userdata.left_arm_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+            <p class="percent-value high">{{userdata.left_arm_muscle_mass | number : '.2-2'}}% High</p>
         </div>
         <div class="an-details trunk">
             <img src="assets/images/trunk.png" style="width: 40px;">
             <p class="head-text">Trunk</p>
-            <p class="head-value">Fat: <b>3.06 Kg</b></p>
-            <p class="percent-value high">209.65% High</p>
+            <p class="head-value">Fat: <b>{{userdata.trunk_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+            <p class="percent-value high">{{userdata.trunk_muscle_mass | number : '.2-2'}}% High</p>
         </div>
         <div class="an-details right-leg">
             <img src="assets/images/rightleg.png" style="width: 40px;">
             <p class="head-text">Right Leg</p>
-            <p class="head-value">Fat: <b>3.06 Kg</b></p>
-            <p class="percent-value high">209.65% High</p>
+            <p class="head-value">Fat: <b>{{userdata.right_leg_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+            <p class="percent-value high">{{userdata.right_leg_muscle_mass | number : '.2-2'}}% High</p>
         </div>
         <div class="an-details left-leg">
             <img src="assets/images/leftleg.png" style="width: 40px;">
-            <p class="head-text">Left Lef</p>
-            <p class="head-value">Fat: <b>3.06 Kg</b></p>
-            <p class="percent-value high">209.65% High</p>
+            <p class="head-text">Left Leg</p>
+            <p class="head-value">Fat: <b>{{userdata.left_leg_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+            <p class="percent-value high">{{userdata.left_leg_muscle_mass | number : '.2-2'}}% High</p>
         </div>
     </div>
     
