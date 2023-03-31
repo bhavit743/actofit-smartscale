@@ -15,6 +15,9 @@ declare module 'jspdf' {
     addHTML: (element: any, x?: number, y?: number, options?: any) => any;
   }
 }
+interface Dictionary {
+  [key: string]: any;
+}
 
 @Component({
   selector: 'app-smartscale',
@@ -56,6 +59,10 @@ smr: any;
 formattedDateNow :any;
 dataExists: boolean = false;
 isMobile: boolean = false;
+lendata : any;
+dict: any;
+fatdata: any;
+
   constructor(private http: HttpClient, private par: ActivatedRoute, private deviceDetectorService: DeviceDetectorService) { 
     Chart.register(...registerables);
     Chart.register(ChartDataLabels);
@@ -73,7 +80,8 @@ isMobile: boolean = false;
             (data2: any) => {
               data2.data.sort((a:any,b:any)=> a.createdAt - b.createdAt)
               this.userData = data2.data[0];
-              this.fulluserdata = data2.data.slice(0,5)
+              this.fulluserdata = data2.data
+              this.lendata = data2.data.length
               resolve(this.userData);
             },
             error => {
@@ -84,7 +92,6 @@ isMobile: boolean = false;
         },
         error => {
           reject(error);
-          console.log("yuay", this.dataExists)
           if (this.dataExists == false){
             const preloader = <HTMLElement>document.querySelector(".preloader")
             preloader.style.zIndex = "-1"
@@ -147,12 +154,24 @@ isMobile: boolean = false;
       document.getElementById("ind-sub")?.classList.add("mobile-text")
       document.getElementById("score")?.classList.add("mobile-less-margin")
     }
+
+
+    // if (window.innerWidth < 768) {
+    //   this.isMobile= true;
+    // }
     //current date and time 
     const now = new Date();
     const options2: Intl.DateTimeFormatOptions =  { day: '2-digit', month: '2-digit', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };    
     this.formattedDateNow = now.toLocaleString('en-US', options2);
 
     this.userdata = await this.getUserProfile()
+    console.log(this.lendata)
+    // console.log(this.fulluserdata)
+    
+
+    if(this.lendata<3){
+      document.getElementById("graph-overlay")?.classList.add("show")
+    }
     // const newdate = new Date(this.userProfile.data.date_of_birth)
     this.age = this.getAge(this.userProfile.data.date_of_birth)
     // this.userdata = {
@@ -160,7 +179,7 @@ isMobile: boolean = false;
     // }
     //test variables
       this.testvar = 5
-      this.gender = "male"
+      this.gender = this.userProfile.data.gender
       this.bodyheight = 170
       this.weight = this.userData.weight
 
@@ -509,12 +528,19 @@ isMobile: boolean = false;
       element.innerHTML = "Not Standard" 
 
     }
-    console.log(this.userdata.right_arm_fat)
+
     //fat analysis
-    if(this.userdata.right_arm_fat == undefined){
+    let keyToCheck = 'right_arm_fat';
+    let isPresentInAny = this.checkKeyPresent(this.fulluserdata, keyToCheck);
+    console.log(isPresentInAny)
+    if (!isPresentInAny){
       document.getElementById("fat-overlay")?.classList.add("show")
     }
-    
+
+    let keyIndex = this.findDictWithKey(this.fulluserdata, keyToCheck)
+    if(keyIndex != undefined){
+      this.fatdata = this.fulluserdata[keyIndex]
+    }
 
     //
     // const data = [
@@ -934,6 +960,12 @@ generatePDF() {
     pdf.save(fileName);
   
   });
+}
+checkKeyPresent(arrayOfDicts: Dictionary[], keyToCheck: string): boolean {
+  return arrayOfDicts.some(dict => dict.hasOwnProperty(keyToCheck));
+}
+findDictWithKey(arrayOfDicts: Dictionary[], keyToFind: string): number | undefined {
+  return arrayOfDicts.findIndex(dict => dict.hasOwnProperty(keyToFind));
 }
 // generatePDF3() {
 //   var pdf = new jsPDF('p', 'pt', 'letter');
