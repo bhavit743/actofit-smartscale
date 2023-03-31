@@ -11,7 +11,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "14.0.1",
-    "@angular/cdk": "^14.0.1",
+    "@angular/cdk": "^14.2.7",
     "@angular/common": "14.0.1",
     "@angular/compiler": "14.0.1",
     "@angular/core": "14.0.1",
@@ -36,6 +36,7 @@
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.28",
     "ng-apexcharts": "^1.7.1",
+    "ngx-device-detector": "^5.0.1",
     "rxjs": "^7.5.5",
     "rxjs-compat": "^6.6.7",
     "sass": "^1.52.3",

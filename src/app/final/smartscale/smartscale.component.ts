@@ -8,8 +8,7 @@ import  { Router } from '@angular/router';
 // import { error } from 'console';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import domToImage from 'dom-to-image';
-import * as FileSaver from 'file-saver';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 declare module 'jspdf' {
   interface jsPDF {
@@ -56,7 +55,8 @@ fulluserdata:any;
 smr: any;
 formattedDateNow :any;
 dataExists: boolean = false;
-  constructor(private http: HttpClient, private par: ActivatedRoute) { 
+isMobile: boolean = false;
+  constructor(private http: HttpClient, private par: ActivatedRoute, private deviceDetectorService: DeviceDetectorService) { 
     Chart.register(...registerables);
     Chart.register(ChartDataLabels);
     
@@ -141,6 +141,12 @@ dataExists: boolean = false;
        await this.getUserProfile();
       });
 
+    this.isMobile = this.deviceDetectorService.isMobile();
+    if(this.isMobile){
+      document.getElementById("ind-score")?.classList.add("mobile-ind")
+      document.getElementById("ind-sub")?.classList.add("mobile-text")
+      document.getElementById("score")?.classList.add("mobile-less-margin")
+    }
     //current date and time 
     const now = new Date();
     const options2: Intl.DateTimeFormatOptions =  { day: '2-digit', month: '2-digit', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };    
@@ -924,7 +930,8 @@ generatePDF() {
     // add the image to the PDF
     pdf.addImage(canvas.toDataURL(), 'PNG', 2, 5, imgWidth, imgHeight);
     // save the PDF
-    pdf.save('screenshot.pdf', );
+    const fileName = `Report_${this.userProfile.data.name}.pdf`; 
+    pdf.save(fileName);
   
   });
 }
@@ -948,28 +955,28 @@ generatePDF() {
 // }
 
 generatePDF2() {
-  const node = this.elementToCapture.nativeElement;
-  // domToImage.toPng(node).then((dataUrl) => {
-  //   const pdf = new jsPDF();
-  //   pdf.addImage(dataUrl, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
-  //   pdf.save('screenshot.pdf');
-  // });
-  domToImage.toPng(node).then((dataUrl) => {
-    // Create a blob from the data URL
-    const blob = this.dataURItoBlob(dataUrl);
-    // Save the blob as a PNG file using file-saver
-    FileSaver.saveAs(blob, 'screenshot.png');
+  html2canvas(document.body, {useCORS: true}).then(canvas => {
+    // Convert canvas to image data
+    const imageData = canvas.toDataURL();
+
+    // Create a link element
+    const link = document.createElement('a');
+    link.download = 'screenshot.png';
+    link.href = imageData;
+
+    // Click the link element to trigger the download
+    link.click();
   });
 }
-dataURItoBlob(dataURI: any) {
-  const byteString = atob(dataURI.split(',')[1]);
-  const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-  const ab = new ArrayBuffer(byteString.length);
-  const ia = new Uint8Array(ab);
-  for (let i = 0; i < byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i);
-  }
-  return new Blob([ab], { type: mimeString });
-}
+// dataURItoBlob(dataURI: any) {
+//   const byteString = atob(dataURI.split(',')[1]);
+//   const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+//   const ab = new ArrayBuffer(byteString.length);
+//   const ia = new Uint8Array(ab);
+//   for (let i = 0; i < byteString.length; i++) {
+//     ia[i] = byteString.charCodeAt(i);
+//   }
+//   return new Blob([ab], { type: mimeString });
+// }
 }
 

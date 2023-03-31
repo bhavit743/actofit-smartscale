@@ -44,7 +44,7 @@
         </div>
     </mat-card-content>
 </mat-card>
-<button (click)="generatePDF2()" class="print-button heading ">Print</button>
+<button (click)="generatePDF()" class="print-button heading ">Print</button>
 <div class="upper-section" fxLayout="row" fxLayoutWrap="wrap">
 <div class="analysis-section" fxFlex.gt-sm="50%">
 <!---body-composition-->
@@ -297,7 +297,7 @@
             <circle cx="105" cy="105" r="50" [style.--percent]="userdata.health_score"></circle>
           </svg> -->
           <div class="number">
-            <h3>{{userdata.health_score | number : '.2-2'}}<span>/100 points</span></h3>
+            <h3 id="score">{{userdata.health_score | number : '.2-2'}}<span>/100 points</span></h3>
           </div>
         </div>
         <!-- <div class="title">
@@ -309,9 +309,9 @@
 
       <div class="score-details">
         <h4 class="heading" style="margin: 0px 10px 10px 10px">Results Interpretation</h4>
-        <div class="ind-score">
+        <div class="ind-score" id="ind-score">
             <h3 class="m-0 sub-heading">Body Composition Analysis</h3>
-            <p class="m-0 sub-text">Body weight is the sum of body fat free mass, which is composed of Dry Lean Mass, Total Body Water, Bone Mass & other Tissue</p>
+            <p class="m-0 sub-text" id="ind-sub">Body weight is the sum of body fat free mass, which is composed of Dry Lean Mass, Total Body Water, Bone Mass & other Tissue</p>
         </div>
         <div class="ind-score">
             <h3 class="m-0 sub-heading">Muscle-Fat Analysis</h3>
