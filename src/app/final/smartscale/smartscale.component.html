@@ -420,9 +420,9 @@
     <div class="blur-overlay" id="fat-overlay">
         <p>To see segmental analysis use Smartscale Pro and Pro Max</p>
     </div>
-    <div class="analysiscol" fxFlex.gt-sm="50%">
+    <div class="analysiscol" fxFlex.gt-sm="50%" *ngIf="right_arm_fat">
         <h4 class="heading" style="text-align: center;">Fat Analysis</h4>
-        <img src="assets/images/fatanalysis.png" class="an-img">
+        <img src="assets/images/leanmass.png" class="an-img">
         <div class="an-details right-arm">
             <img src="assets/images/rightarm.png" style="width: 40px;">
             <p class="head-text">Right Arm</p>
@@ -454,9 +454,9 @@
             <p class="percent-value high">{{fatdata.right_leg_fat | number : '.2-2'}}% High</p>
         </div>
     </div>
-    <div class="analysiscol" fxFlex.gt-sm="50%">
+    <div class="analysiscol" fxFlex.gt-sm="50%" *ngIf="right_arm_fat">
         <h4 class="heading" style="text-align: center;">Lean Mass Analysis</h4>
-        <img src="assets/images/leanmass.png" class="an-img">
+        <img src="assets/images/fatanalysis.png" class="an-img">
         <div class="an-details right-arm">
             <img src="assets/images/rightarm.png" style="width: 40px;">
             <p class="head-text">Right Arm</p>
@@ -921,9 +921,9 @@
           <div class="blur-overlay" id="fat-overlay">
               <p>To see segmental analysis use Smartscale Pro and Pro Max</p>
           </div>
-          <div class="analysiscol" fxFlex.gt-sm="50%">
+          <div class="analysiscol" fxFlex.gt-sm="50%" *ngIf="right_arm_fat">
               <h4 class="heading" style="text-align: center;">Fat Analysis</h4>
-              <img src="assets/images/fatanalysis.png" class="an-img">
+              <img src="assets/images/leanmass.png" class="an-img">
               <div class="an-details right-arm">
                   <img src="assets/images/rightarm.png" style="width: 40px;">
                   <p class="head-text">Right Arm</p>
@@ -955,9 +955,9 @@
                   <p class="percent-value high">{{fatdata.right_leg_fat | number : '.2-2'}}% High</p>
               </div>
           </div>
-          <div class="analysiscol" fxFlex.gt-sm="50%">
+          <div class="analysiscol" fxFlex.gt-sm="50%" *ngIf="right_arm_fat">
               <h4 class="heading" style="text-align: center;">Lean Mass Analysis</h4>
-              <img src="assets/images/leanmass.png" class="an-img">
+              <img src="assets/images/fatanalysis.png" class="an-img">
               <div class="an-details right-arm">
                   <img src="assets/images/rightarm.png" style="width: 40px;">
                   <p class="head-text">Right Arm</p>
