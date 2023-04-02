@@ -62,7 +62,7 @@ isMobile: boolean = false;
 lendata : any;
 dict: any;
 fatdata: any;
-
+isPresentInAny: any;
   constructor(private http: HttpClient, private par: ActivatedRoute, private deviceDetectorService: DeviceDetectorService) { 
     Chart.register(...registerables);
     Chart.register(ChartDataLabels);
@@ -531,9 +531,9 @@ fatdata: any;
 
     //fat analysis
     let keyToCheck = 'right_arm_fat';
-    let isPresentInAny = this.checkKeyPresent(this.fulluserdata, keyToCheck);
-    console.log(isPresentInAny)
-    if (!isPresentInAny){
+    this.isPresentInAny = this.checkKeyPresent(this.fulluserdata, keyToCheck);
+    console.log(this.isPresentInAny)
+    if (!this.isPresentInAny){
       document.getElementById("fat-overlay")?.classList.add("show")
     }
 
@@ -553,33 +553,33 @@ fatdata: any;
     //   // { year: 2016, count: 28 },
     // ];
     const weightdata = [
-      { year: this.formatDate(this.fulluserdata[4].createdAt), count: this.fulluserdata[4].weight },
-      { year: this.formatDate(this.fulluserdata[3].createdAt), count: this.fulluserdata[3].weight },
-      { year: this.formatDate(this.fulluserdata[2].createdAt), count: this.fulluserdata[2].weight },
-      { year: this.formatDate(this.fulluserdata[1].createdAt), count: this.fulluserdata[1].weight },
-      { year: this.formatDate(this.fulluserdata[0].createdAt), count: this.fulluserdata[0].weight },
+      { year: this.formatDate(this.fulluserdata[4].timestamp), count: this.fulluserdata[4].weight },
+      { year: this.formatDate(this.fulluserdata[3].timestamp), count: this.fulluserdata[3].weight },
+      { year: this.formatDate(this.fulluserdata[2].timestamp), count: this.fulluserdata[2].weight },
+      { year: this.formatDate(this.fulluserdata[1].timestamp), count: this.fulluserdata[1].weight },
+      { year: this.formatDate(this.fulluserdata[0].timestamp), count: this.fulluserdata[0].weight },
     ];
     const smmdata = [
-      { year: this.formatDate(this.fulluserdata[4].createdAt), count: this.fulluserdata[4].skeletal_muscle },
-      { year: this.formatDate(this.fulluserdata[3].createdAt), count: this.fulluserdata[3].skeletal_muscle },
-      { year: this.formatDate(this.fulluserdata[2].createdAt), count: this.fulluserdata[2].skeletal_muscle },
-      { year: this.formatDate(this.fulluserdata[1].createdAt), count: this.fulluserdata[1].skeletal_muscle },
-      { year: this.formatDate(this.fulluserdata[0].createdAt), count: this.fulluserdata[0].skeletal_muscle },
+      { year: this.formatDate(this.fulluserdata[4].timestamp), count: this.fulluserdata[4].skeletal_muscle },
+      { year: this.formatDate(this.fulluserdata[3].timestamp), count: this.fulluserdata[3].skeletal_muscle },
+      { year: this.formatDate(this.fulluserdata[2].timestamp), count: this.fulluserdata[2].skeletal_muscle },
+      { year: this.formatDate(this.fulluserdata[1].timestamp), count: this.fulluserdata[1].skeletal_muscle },
+      { year: this.formatDate(this.fulluserdata[0].timestamp), count: this.fulluserdata[0].skeletal_muscle },
     ];
     const bfmdata = [
-      { year: this.formatDate(this.fulluserdata[4].createdAt), count: this.fulluserdata[4].body_fat },
-      { year: this.formatDate(this.fulluserdata[3].createdAt), count: this.fulluserdata[3].body_fat },
-      { year: this.formatDate(this.fulluserdata[2].createdAt), count: this.fulluserdata[2].body_fat },
-      { year: this.formatDate(this.fulluserdata[1].createdAt), count: this.fulluserdata[1].body_fat },
-      { year: this.formatDate(this.fulluserdata[0].createdAt), count: this.fulluserdata[0].body_fat },
+      { year: this.formatDate(this.fulluserdata[4].timestamp), count: this.fulluserdata[4].body_fat },
+      { year: this.formatDate(this.fulluserdata[3].timestamp), count: this.fulluserdata[3].body_fat },
+      { year: this.formatDate(this.fulluserdata[2].timestamp), count: this.fulluserdata[2].body_fat },
+      { year: this.formatDate(this.fulluserdata[1].timestamp), count: this.fulluserdata[1].body_fat },
+      { year: this.formatDate(this.fulluserdata[0].timestamp), count: this.fulluserdata[0].body_fat },
     ];
 
     const testdata = [
-      { year: this.formatDate(this.fulluserdata[4].createdAt), count: '' },
-      { year: this.formatDate(this.fulluserdata[3].createdAt), count: '' },
-      { year: this.formatDate(this.fulluserdata[2].createdAt), count: '' },
-      { year: this.formatDate(this.fulluserdata[1].createdAt), count: '' },
-      { year: this.formatDate(this.fulluserdata[0].createdAt), count: '' },
+      { year: this.formatDate(this.fulluserdata[4].timestamp), count: '' },
+      { year: this.formatDate(this.fulluserdata[3].timestamp), count: '' },
+      { year: this.formatDate(this.fulluserdata[2].timestamp), count: '' },
+      { year: this.formatDate(this.fulluserdata[1].timestamp), count: '' },
+      { year: this.formatDate(this.fulluserdata[0].timestamp), count: '' },
     ];
     
 
@@ -908,9 +908,11 @@ calculatePointerPosition(minValue:any, maxValue:any, value:any, n:any){
 }
 formatDate(isoDate: any){
 const date = new Date(isoDate);
-const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
-const formattedDate = date.toLocaleDateString('en-US', options);
-return formattedDate
+const month = date.toLocaleString('default', { month: 'short' });
+const dayOfMonth = date.getDate();
+// Combine the month and day of the month into a string
+const result = month + ' ' + dayOfMonth;
+return result
 }
 // getUserID(url:any, headers:any): Promise<any>{
 //   return new Promise((resolve, reject) => {
