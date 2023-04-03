@@ -78,7 +78,7 @@ isPresentInAny: any;
           this.dataExists = true;
           this.http.get<any>(this.userDataUrl, { headers: this.headers }).subscribe(
             (data2: any) => {
-              data2.data.sort((a:any,b:any)=> a.createdAt - b.createdAt)
+              data2.data.sort((a:any,b:any)=> a.timestamp - b.timestamp)
               this.userData = data2.data[0];
               this.fulluserdata = data2.data
               this.lendata = data2.data.length
