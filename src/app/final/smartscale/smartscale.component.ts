@@ -78,7 +78,7 @@ isPresentInAny: any;
           this.dataExists = true;
           this.http.get<any>(this.userDataUrl, { headers: this.headers }).subscribe(
             (data2: any) => {
-              data2.data.sort((a:any,b:any)=> a.timestamp - b.timestamp)
+              data2.data.sort((a:any,b:any)=> a.timestamp - b.timestamp).reverse()
               this.userData = data2.data[0];
               this.fulluserdata = data2.data
               this.lendata = data2.data.length
@@ -166,7 +166,6 @@ isPresentInAny: any;
 
     this.userdata = await this.getUserProfile()
     console.log(this.lendata)
-    // console.log(this.fulluserdata)
     
 
     if(this.lendata<3){
@@ -540,6 +539,11 @@ isPresentInAny: any;
     let keyIndex = this.findDictWithKey(this.fulluserdata, keyToCheck)
     if(keyIndex != undefined){
       this.fatdata = this.fulluserdata[keyIndex]
+      if (this.fatdata.right_arm_fat == null){
+        document.getElementById("fat-overlay")?.classList.add("show")
+
+      }
+      console.log(this.fatdata)
     }
 
     //
