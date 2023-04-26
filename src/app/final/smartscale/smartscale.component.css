@@ -281,7 +281,10 @@
     font-weight: 600;
     margin-left: 15px;
 }
-
+.percent-value .not-standard, .percent-value .standard, .percent-value .low{
+    border: none !important;
+    border-radius: 0px !important;
+}
 .mfa .col-2{
     background-color: #F6F9FC;
     border: 0.32px solid #E0E0DF;

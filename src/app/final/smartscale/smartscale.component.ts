@@ -63,7 +63,7 @@ lendata : any;
 dict: any;
 fatdata: any;
 isPresentInAny: any;
-  constructor(private http: HttpClient, private par: ActivatedRoute, private deviceDetectorService: DeviceDetectorService) { 
+  constructor(private http: HttpClient, private par: ActivatedRoute, private deviceDetectorService: DeviceDetectorService, private elRef: ElementRef) { 
     Chart.register(...registerables);
     Chart.register(ChartDataLabels);
     
@@ -103,6 +103,7 @@ isPresentInAny: any;
     });
   }
   @ViewChild('elementToCapture') elementToCapture!: ElementRef<HTMLDivElement>;
+  @ViewChild('right-arm-fat') rightyElementRef!: ElementRef;
 
   getAge(dateOfBirth: string): number {
     const today = new Date();
@@ -159,14 +160,15 @@ isPresentInAny: any;
     // if (window.innerWidth < 768) {
     //   this.isMobile= true;
     // }
-    //current date and time 
-    const now = new Date();
-    const options2: Intl.DateTimeFormatOptions =  { day: '2-digit', month: '2-digit', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };    
-    this.formattedDateNow = now.toLocaleString('en-US', options2);
-
+    
     this.userdata = await this.getUserProfile()
     console.log(this.lendata)
+    console.log(this.userData)
     
+    //current date and time 
+    const now = new Date(this.userData.timestamp);
+    const options2: Intl.DateTimeFormatOptions =  { day: '2-digit', month: '2-digit', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true};    
+    this.formattedDateNow = now.toLocaleString('en-GB', options2);
 
     if(this.lendata<3){
       document.getElementById("graph-overlay")?.classList.add("show")
@@ -546,6 +548,9 @@ isPresentInAny: any;
       console.log(this.fatdata)
     }
 
+    //segmental analysis
+    
+
     //
     // const data = [
     //   { year: 2010, count: 10 },
@@ -900,6 +905,144 @@ isPresentInAny: any;
   //           }
   //         },
   //   }
+
+ngAfterViewInit(){
+  if(this.fatdata.right_arm_fat<80){
+    document.getElementById("right-arm-fat")?.classList.add("low")
+    const element: HTMLElement = document.getElementById('right-arm-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.right_arm_fat} % Low`  
+  }else if(80<=this.fatdata.right_arm_fat && this.fatdata.right_arm_fat<=160){
+    document.getElementById("right-arm-fat")?.classList.add("standard")
+    const element: HTMLElement = document.getElementById('right-arm-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.right_arm_fat} % Standard` 
+  }else if(this.fatdata.right_arm_fat>160){
+    document.getElementById("right-arm-fat")?.classList.add("not-standard")
+    const element: HTMLElement = document.getElementById('right-arm-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.right_arm_fat} % High`
+  }
+
+  if(this.fatdata.left_arm_fat<80){
+    document.getElementById("left-arm-fat")?.classList.add("low")
+    const element: HTMLElement = document.getElementById('left-arm-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.left_arm_fat} % Low`  
+  }else if(80<=this.fatdata.left_arm_fat && this.fatdata.left_arm_fat<=160){
+    document.getElementById("left-arm-fat")?.classList.add("standard")
+    const element: HTMLElement = document.getElementById('left-arm-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.left_arm_fat} % Standard` 
+  }else if(this.fatdata.left_arm_fat>160){
+    document.getElementById("left-arm-fat")?.classList.add("not-standard")
+    const element: HTMLElement = document.getElementById('left-arm-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.left_arm_fat} % High`
+  }
+  if(this.fatdata.trunk_fat<80){
+    document.getElementById("trunk-fat")?.classList.add("low")
+    const element: HTMLElement = document.getElementById('trunk-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.trunk_fat} % Low`  
+  }else if(80<=this.fatdata.trunk_fat && this.fatdata.trunk_fat<=160){
+    document.getElementById("trunk-fat")?.classList.add("standard")
+    const element: HTMLElement = document.getElementById('trunk-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.trunk_fat} % Standard` 
+  }else if(this.fatdata.left_arm_fat>160){
+    document.getElementById("trunk-fat")?.classList.add("not-standard")
+    const element: HTMLElement = document.getElementById('trunk-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.trunk_fat} % High`
+  }
+  if(this.fatdata.left_leg_fat<80){
+    document.getElementById("left-leg-fat")?.classList.add("low")
+    const element: HTMLElement = document.getElementById('left-leg-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.left_leg_fat} % Low`  
+  }else if(80<=this.fatdata.left_leg_fat && this.fatdata.left_leg_fat<=160){
+    document.getElementById("left-leg-fat")?.classList.add("standard")
+    const element: HTMLElement = document.getElementById('left-leg-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.left_leg_fat} % Standard` 
+  }else if(this.fatdata.left_leg_fat>160){
+    document.getElementById("left-leg-fat")?.classList.add("not-standard")
+    const element: HTMLElement = document.getElementById('left-leg-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.left_leg_fat} % High`
+  }
+  if(this.fatdata.right_leg_fat<80){
+    document.getElementById("right-leg-fat")?.classList.add("low")
+    const element: HTMLElement = document.getElementById('right-leg-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.right_leg_fat} % Low`  
+  }else if(80<=this.fatdata.right_leg_fat && this.fatdata.right_leg_fat<=160){
+    document.getElementById("right-leg-fat")?.classList.add("standard")
+    const element: HTMLElement = document.getElementById('right-leg-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.right_leg_fat} % Standard` 
+  }else if(this.fatdata.right_leg_fat>160){
+    document.getElementById("right-leg-fat")?.classList.add("not-standard")
+    const element: HTMLElement = document.getElementById('right-leg-fat') as HTMLElement
+    element.innerHTML = `${this.fatdata.right_leg_fat} % High`
+  }
+
+  //lean mass
+
+  if(this.fatdata.right_arm_muscle_mass<80){
+    document.getElementById("right-arm-mass")?.classList.add("low")
+    const element: HTMLElement = document.getElementById('right-arm-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.right_arm_muscle_mass} % Low`  
+  }else if(80<=this.fatdata.right_arm_muscle_mass && this.fatdata.right_arm_muscle_mass<=115){
+    document.getElementById("right-arm-mass")?.classList.add("standard")
+    const element: HTMLElement = document.getElementById('right-arm-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.right_arm_muscle_mass} % Standard` 
+  }else if(this.fatdata.right_arm_muscle_mass>115){
+    document.getElementById("right-arm-mass")?.classList.add("not-standard")
+    const element: HTMLElement = document.getElementById('right-arm-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.right_arm_muscle_mass} % High`
+  }
+
+  if(this.fatdata.left_arm_muscle_mass<80){
+    document.getElementById("left-arm-mass")?.classList.add("low")
+    const element: HTMLElement = document.getElementById('left-arm-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.left_arm_muscle_mass} % Low`  
+  }else if(80<=this.fatdata.left_arm_muscle_mass && this.fatdata.left_arm_muscle_mass<=115){
+    document.getElementById("left-arm-mass")?.classList.add("standard")
+    const element: HTMLElement = document.getElementById('left-arm-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.left_arm_muscle_mass} % Standard` 
+  }else if(this.fatdata.left_arm_muscle_mass>115){
+    document.getElementById("left-arm-mass")?.classList.add("not-standard")
+    const element: HTMLElement = document.getElementById('left-arm-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.left_arm_muscle_mass} % High`
+  }
+  if(this.fatdata.trunk_muscle_mass<90){
+    document.getElementById("trunk-mass")?.classList.add("low")
+    const element: HTMLElement = document.getElementById('trunk-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.trunk_muscle_mass} % Low`  
+  }else if(90<=this.fatdata.trunk_muscle_mass && this.fatdata.trunk_muscle_mass<=110){
+    document.getElementById("trunk-mass")?.classList.add("standard")
+    const element: HTMLElement = document.getElementById('trunk-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.trunk_muscle_mass} % Standard` 
+  }else if(this.fatdata.left_arm_muscle_mass>110){
+    document.getElementById("trunk-mass")?.classList.add("not-standard")
+    const element: HTMLElement = document.getElementById('trunk-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.trunk_muscle_mass} % High`
+  }
+  if(this.fatdata.left_leg_muscle_mass<90){
+    document.getElementById("left-leg-mass")?.classList.add("low")
+    const element: HTMLElement = document.getElementById('left-leg-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.left_leg_muscle_mass} % Low`  
+  }else if(90<=this.fatdata.left_leg_muscle_mass && this.fatdata.left_leg_muscle_mass<=110){
+    document.getElementById("left-leg-mass")?.classList.add("standard")
+    const element: HTMLElement = document.getElementById('left-leg-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.left_leg_muscle_mass} % Standard` 
+  }else if(this.fatdata.left_leg_muscle_mass>110){
+    document.getElementById("left-leg-mass")?.classList.add("not-standard")
+    const element: HTMLElement = document.getElementById('left-leg-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.left_leg_muscle_mass} % High`
+  }
+  if(this.fatdata.right_leg_muscle_mass<90){
+    document.getElementById("right-leg-mass")?.classList.add("low")
+    const element: HTMLElement = document.getElementById('right-leg-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.right_leg_muscle_mass} % Low`  
+  }else if(90<=this.fatdata.right_leg_muscle_mass && this.fatdata.right_leg_muscle_mass<=110){
+    document.getElementById("right-leg-mass")?.classList.add("standard")
+    const element: HTMLElement = document.getElementById('right-leg-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.right_leg_muscle_mass} % Standard` 
+  }else if(this.fatdata.right_leg_muscle_mass>110){
+    document.getElementById("right-leg-mass")?.classList.add("not-standard")
+    const element: HTMLElement = document.getElementById('right-leg-mass') as HTMLElement
+    element.innerHTML = `${this.fatdata.right_leg_muscle_mass} % High`
+  }
+}
 onPrint(){
     this.printscreen = document.getElementsByTagName("body");
 }
