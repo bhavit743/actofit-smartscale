@@ -223,7 +223,7 @@
     <div class="table-row">
         <div fxLayout="row" fxLayoutWrap="wrap" class="table-row-2">
         <div class="col-1" fxFlex.gt-sm="25%">
-            BMI<br>
+            BMI ({{userdata.bmi | number : '.2-2'}})<br>
             <span class="sub-text">(Body Mass Index)</span>
         </div>
         <div class="col-2 m-t-5" fxFlex.gt-sm="75%" style="margin-left: 20px;" fxLayout="row" fxLayoutWrap="wrap">
@@ -250,7 +250,7 @@
         </div>
         <div fxLayout="row" fxLayoutWrap="wrap" class="table-row-2">
             <div class="col-1" fxFlex.gt-sm="25%">
-                PBF<br>
+                PBF ({{ userdata.body_fat*weight/100 | number : '.2-2'}}%)<br>
                 <span class="sub-text">(Percent Body Fat)</span>
             </div>
             <div class="col-2 m-t-5" fxFlex.gt-sm="75%" style="margin-left: 20px;" fxLayout="row" fxLayoutWrap="wrap">
@@ -377,7 +377,7 @@
 <!---Analysis Data-->
 <div class="analysis-section-1" fxLayout="row" fxLayoutWrap="wrap">
 <div class="segmental-graph" fxFlex.gt-sm="50%">
-    <h3 class="heading">Segmental Body Analysis</h3>
+    <h3 class="heading">Body Composition History</h3>
 <mat-card class="card-main sba" style="height: 500px">
     <div class="table-row" fxLayout="row" fxLayoutWrap="wrap">
         <div class="col-1 heading" fxFlex.gt-sm="25%">
@@ -460,31 +460,31 @@
         <div class="an-details right-arm">
             <img src="assets/images/rightarm.png" style="width: 40px;">
             <p class="head-text">Right Arm</p>
-            <p class="head-value">Fat: <b>{{fatdata.right_arm_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+            <p class="head-value">Lean Mass: <b>{{fatdata.right_arm_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
             <p class="percent-value high">{{fatdata.right_arm_muscle_mass | number : '.2-2'}}% High</p>
         </div>
         <div class="an-details left-arm">
             <img src="assets/images/leftarm.png" style="width: 40px;">
             <p class="head-text">Left Arm</p>
-            <p class="head-value">Fat: <b>{{fatdata.left_arm_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+            <p class="head-value">Lean Mass: <b>{{fatdata.left_arm_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
             <p class="percent-value high">{{fatdata.left_arm_muscle_mass | number : '.2-2'}}% High</p>
         </div>
         <div class="an-details trunk">
             <img src="assets/images/trunk.png" style="width: 40px;">
             <p class="head-text">Trunk</p>
-            <p class="head-value">Fat: <b>{{fatdata.trunk_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+            <p class="head-value">Lean Mass: <b>{{fatdata.trunk_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
             <p class="percent-value high">{{fatdata.trunk_muscle_mass | number : '.2-2'}}% High</p>
         </div>
         <div class="an-details right-leg">
             <img src="assets/images/rightleg.png" style="width: 40px;">
             <p class="head-text">Right Leg</p>
-            <p class="head-value">Fat: <b>{{fatdata.right_leg_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+            <p class="head-value">Lean Mass: <b>{{fatdata.right_leg_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
             <p class="percent-value high">{{fatdata.right_leg_muscle_mass | number : '.2-2'}}% High</p>
         </div>
         <div class="an-details left-leg">
             <img src="assets/images/leftleg.png" style="width: 40px;">
             <p class="head-text">Left Leg</p>
-            <p class="head-value">Fat: <b>{{fatdata.left_leg_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+            <p class="head-value">Lean Mass: <b>{{fatdata.left_leg_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
             <p class="percent-value high">{{fatdata.left_leg_muscle_mass | number : '.2-2'}}% High</p>
         </div>
     </div>
@@ -721,7 +721,7 @@
           <div class="table-row">
               <div fxLayout="row" fxLayoutWrap="wrap" class="table-row-2">
               <div class="col-1" fxFlex.gt-sm="25%">
-                  BMI<br>
+                  BMI ({{userdata.bmi | number : '.2-2'}})<br>
                   <span class="sub-text">(Body Mass Index)</span>
               </div>
               <div class="col-2 m-t-5" fxFlex.gt-sm="75%" style="margin-left: 20px;" fxLayout="row" fxLayoutWrap="wrap">
@@ -748,7 +748,7 @@
               </div>
               <div fxLayout="row" fxLayoutWrap="wrap" class="table-row-2">
                   <div class="col-1" fxFlex.gt-sm="25%">
-                      PBF<br>
+                      PBF ({{ userdata.body_fat*weight/100 | number : '.2-2'}}%)<br>
                       <span class="sub-text">(Percent Body Fat)</span>
                   </div>
                   <div class="col-2 m-t-5" fxFlex.gt-sm="75%" style="margin-left: 20px;" fxLayout="row" fxLayoutWrap="wrap">
@@ -875,7 +875,7 @@
       <!---Analysis Data-->
       <div class="analysis-section-1" fxLayout="row" fxLayoutWrap="wrap">
       <div class="segmental-graph" fxFlex.gt-sm="50%">
-          <h3 class="heading sec-head">Segmental Body Analysis</h3>
+          <h3 class="heading sec-head">Body Composition History</h3>
       <mat-card class="card-main sba" style="height: 280px">
         <div class="graph-overlay" id="graph-overlay">
             <p>The graphical variations will be visible after using the scale more than 5 times</p>
@@ -961,31 +961,31 @@
               <div class="an-details right-arm">
                   <img src="assets/images/rightarm.png" style="width: 40px;">
                   <p class="head-text">Right Arm</p>
-                  <p class="head-value">Fat: <b>{{fatdata.right_arm_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+                  <p class="head-value">Lean Mass: <b>{{fatdata.right_arm_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
                   <p class="percent-value high">{{fatdata.right_arm_muscle_mass | number : '.2-2'}}% High</p>
               </div>
               <div class="an-details left-arm">
                   <img src="assets/images/leftarm.png" style="width: 40px;">
                   <p class="head-text">Left Arm</p>
-                  <p class="head-value">Fat: <b>{{fatdata.left_arm_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+                  <p class="head-value">Lean Mass: <b>{{fatdata.left_arm_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
                   <p class="percent-value high">{{fatdata.left_arm_muscle_mass | number : '.2-2'}}% High</p>
               </div>
               <div class="an-details trunk">
                   <img src="assets/images/trunk.png" style="width: 40px;">
                   <p class="head-text">Trunk</p>
-                  <p class="head-value">Fat: <b>{{fatdata.trunk_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+                  <p class="head-value">Lean Mass: <b>{{fatdata.trunk_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
                   <p class="percent-value high">{{fatdata.trunk_muscle_mass | number : '.2-2'}}% High</p>
               </div>
               <div class="an-details right-leg">
                   <img src="assets/images/rightleg.png" style="width: 40px;">
                   <p class="head-text">Right Leg</p>
-                  <p class="head-value">Fat: <b>{{fatdata.right_leg_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+                  <p class="head-value">Lean Mass: <b>{{fatdata.right_leg_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
                   <p class="percent-value high">{{fatdata.right_leg_muscle_mass | number : '.2-2'}}% High</p>
               </div>
               <div class="an-details left-leg">
                   <img src="assets/images/leftleg.png" style="width: 40px;">
                   <p class="head-text">Left Leg</p>
-                  <p class="head-value">Fat: <b>{{fatdata.left_leg_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
+                  <p class="head-value">Lean Mass: <b>{{fatdata.left_leg_muscle_mass_kg | number : '.2-2'}} Kg</b></p>
                   <p class="percent-value high">{{fatdata.left_leg_muscle_mass | number : '.2-2'}}% High</p>
               </div>
           </div>
