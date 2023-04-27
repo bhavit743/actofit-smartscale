@@ -370,7 +370,7 @@ canvas{
 }
 .header{
     display: grid;
-    grid-template-columns: 15% 60% 10% 15%;
+    grid-template-columns: 15% 60% 15% 10%;
     position: relative;
     margin-bottom: 20px;
     margin-top: 0px;
