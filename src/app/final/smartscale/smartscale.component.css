@@ -592,3 +592,6 @@ canvas{
 .mobile .table-row-2{
     margin: 23px 0px;
 }
+.mobile .an-details p{
+    font-size: 5px;
+}
